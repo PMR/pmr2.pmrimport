@@ -31,6 +31,8 @@ class DirBuilder(object):
         '(?:_(part[0-9]{2}))?$'
     )
 
+    re_clean_name = re.compile('_version[0-9]{2}')
+
     def __init__(self, workdir, files=None):
         self.workdir = workdir
         self.files = files
@@ -47,23 +49,39 @@ class DirBuilder(object):
             raise ValueError("'%s' is an invalid base uri" % baseuri)
         return citation, version, variant, part
 
-    def mkdir(self, citation=None):
+    def mkdir(self, *a):
         """\
         Creates a directory within the working directory.  If directory
         is already created nothing is done.
         """
 
-        if citation:
-            d = os.path.join(self.workdir, citation)
-        else:
-            d = self.workdir
+        # XXX maybe shutils does what we need here.
 
+        d = os.path.join(self.workdir, *a)
+
+        # assumes parent dir already exists.
         if not os.path.isdir(d):
             os.mkdir(d)
 
     def process(self, uri):
         baseuri = os.path.basename(uri)
         citation, version, variant, part = self.breakuri(baseuri)
+        self.mkdir(citation)
+        self.mkdir(citation, version)
+        cellml_data = self.getmodel(uri)
+        cellml_fn = os.path.join(
+            self.workdir, citation, version,
+            self.re_clean_name.sub('', baseuri)
+        ) + '.cellml'
+        cellml = open(cellml_fn, 'w')
+        cellml.write(cellml_data)
+        cellml.close()
+
+    def getmodel(self, uri):
+        return self.fetchuri(uri + '/download')
+
+    def fetchuri(self, uri):
+        return urllib.urlopen(uri).read()
 
     def run(self):
         """\

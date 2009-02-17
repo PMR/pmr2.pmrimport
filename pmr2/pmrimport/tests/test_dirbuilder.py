@@ -1,6 +1,8 @@
 import unittest
 import sys
 import os, os.path
+import shutil
+import tempfile
 from cStringIO import StringIO
 
 from pmr2.pmrimport.builder import *
@@ -46,27 +48,67 @@ class BaseDirBuilderTestCase(unittest.TestCase):
 
 
 class MainDirBuilderTestCase(unittest.TestCase):
+    """\
+    Will use the PMR instance, but only partial list of files supplied here.
+    """
+
+    uris = [
+        'http://www.cellml.org/models/beeler_reuter_1977_version01',
+        'http://www.cellml.org/models/beeler_reuter_1977_version02',
+        'http://www.cellml.org/models/beeler_reuter_1977_version03',
+        'http://www.cellml.org/models/beeler_reuter_1977_version04',
+        'http://www.cellml.org/models/beeler_reuter_1977_version05',
+        'http://www.cellml.org/models/beeler_reuter_1977_version06',
+        'http://www.cellml.org/models/beeler_reuter_1977_version07',
+        'http://www.cellml.org/models/beeler_reuter_1977_version08',
+        'http://www.cellml.org/models/bental_2006_version02_variant03',
+        'http://www.cellml.org/models/bental_2006_version02_variant02',
+        'http://www.cellml.org/models/bental_2006_version02_variant01',
+        'http://www.cellml.org/models/bental_2006_version02',
+        'http://www.cellml.org/models/bental_2006_version01_variant03',
+        'http://www.cellml.org/models/bental_2006_version01_variant02',
+        'http://www.cellml.org/models/bental_2006_version01_variant01',
+        'http://www.cellml.org/models/bental_2006_version01',
+    ]
 
     def setUp(self):
-        pass
+        self.workdir = tempfile.mkdtemp()
+        self.builder = DirBuilder(self.workdir, self.uris)
 
     def tearDown(self):
-        pass
+        shutil.rmtree(self.workdir)
 
-    def test_basic(self):
-        o = DirBuilder('tmp', [])
+    def test_process(self):
+        uri = self.uris[0]
+        self.builder.process(uri)
+        citation, version, variant, part = \
+            self.builder.breakuri(os.path.basename(uri))
+        self.assert_(os.path.isdir(os.path.join(
+            self.workdir, os.path.basename(citation))))
+        self.assert_(os.path.isdir(os.path.join(
+            self.workdir, citation, version)))
+        self.assert_(os.path.isdir(os.path.join(
+            self.workdir, citation, version)))
+
+        cellml_file = os.path.join(
+            self.workdir, citation, version, 'beeler_reuter_1977.cellml')
+        self.assert_(os.path.isfile(cellml_file))
+
+        f = open(cellml_file).read()
+        self.assert_('<model ' in f)
 
 
 class LiveDirBuilderTestCase(unittest.TestCase):
     """\
-    Will access the live PMR instance.
+    Will use the full, live PMR instance.
     """
 
     # globals to reduce re-downloading stuff
     urilist = []
 
     def setUp(self):
-        self.o = DirBuilder('tmp', [])
+        self.workdir = tempfile.mkdtemp()
+        self.builder = DirBuilder(self.workdir, [])
 
     def tearDown(self):
         pass
@@ -74,7 +116,7 @@ class LiveDirBuilderTestCase(unittest.TestCase):
     def test_001_breakuri(self):
         urilist = get_pmr_urilist()
         LiveDirBuilderTestCase.urilist = urilist
-        output = [self.o.breakuri(os.path.basename(i)) for i in urilist]
+        output = [self.builder.breakuri(os.path.basename(i)) for i in urilist]
         self.assertEqual(len(urilist), len(output))
 
 
