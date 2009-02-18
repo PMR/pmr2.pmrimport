@@ -11,7 +11,8 @@ from pmr2.pmrimport.builder import *
 class BaseDirBuilderTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.o = DirBuilder('tmp', [])
+        self.workdir = tempfile.mkdtemp()
+        self.builder = DirBuilder(self.workdir, [])
 
     def tearDown(self):
         pass
@@ -23,7 +24,7 @@ class BaseDirBuilderTestCase(unittest.TestCase):
         )
 
         for i in tests:
-            self.assertRaises(ValueError, self.o.breakuri, i)
+            self.assertRaises(ValueError, self.builder.breakuri, i)
 
     def test_breakuri_valid(self):
         tests = (
@@ -44,7 +45,22 @@ class BaseDirBuilderTestCase(unittest.TestCase):
         )
 
         for i, o in tests:
-            self.assertEqual(self.o.breakuri(i), o, "input '%s' failed" % i)
+            self.assertEqual(self.builder.breakuri(i), o,
+                "input '%s' failed" % i)
+
+    def test_prepare_cellml_path(self):
+        uri = 'http://www.cellml.org/models/beeler_reuter_1977_version01'
+        result = self.builder.prepare_cellml_path(uri)
+        citation, version, variant, part = \
+            self.builder.breakuri(os.path.basename(uri))
+        self.assert_(os.path.isdir(os.path.join(
+            self.workdir, os.path.basename(citation))))
+        self.assert_(os.path.isdir(os.path.join(
+            self.workdir, citation, version)))
+        self.assert_(os.path.isdir(os.path.join(
+            self.workdir, citation, version)))
+        self.assertEqual(result, os.path.join(
+            self.workdir, citation, version, 'beeler_reuter_1977.cellml'))
 
 
 class MainDirBuilderTestCase(unittest.TestCase):
@@ -78,23 +94,16 @@ class MainDirBuilderTestCase(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.workdir)
 
-    def test_process(self):
-        uri = self.uris[0]
-        self.builder.process(uri)
-        citation, version, variant, part = \
-            self.builder.breakuri(os.path.basename(uri))
-        self.assert_(os.path.isdir(os.path.join(
-            self.workdir, os.path.basename(citation))))
-        self.assert_(os.path.isdir(os.path.join(
-            self.workdir, citation, version)))
-        self.assert_(os.path.isdir(os.path.join(
-            self.workdir, citation, version)))
+    def test_process_basic(self):
+        uri = self.uris[0]  # beeler_reuter_1977_version01
+        result = self.builder.process(uri)
+        f = open(result).read()
+        self.assert_('<model ' in f)
 
-        cellml_file = os.path.join(
-            self.workdir, citation, version, 'beeler_reuter_1977.cellml')
-        self.assert_(os.path.isfile(cellml_file))
-
-        f = open(cellml_file).read()
+    def test_process_variant(self):
+        uri = self.uris[8]  # bental_2006_version02_variant03
+        result = self.builder.process(uri)
+        f = open(result).read()
         self.assert_('<model ' in f)
 
 
