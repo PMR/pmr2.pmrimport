@@ -8,11 +8,11 @@ from cStringIO import StringIO
 from pmr2.pmrimport.builder import *
 
 
-class BaseDirBuilderTestCase(unittest.TestCase):
+class BaseCellMLBuilderTestCase(unittest.TestCase):
 
     def setUp(self):
         self.workdir = tempfile.mkdtemp()
-        self.builder = DirBuilder(self.workdir, [])
+        self.builder = CellMLBuilder(self.workdir, '')
 
     def tearDown(self):
         pass
@@ -63,7 +63,7 @@ class BaseDirBuilderTestCase(unittest.TestCase):
             self.workdir, citation, version, 'beeler_reuter_1977.cellml'))
 
 
-class MainDirBuilderTestCase(unittest.TestCase):
+class MainCellMLBuilderTestCase(unittest.TestCase):
     """\
     Will use the PMR instance, but only partial list of files supplied here.
     """
@@ -89,25 +89,27 @@ class MainDirBuilderTestCase(unittest.TestCase):
 
     def setUp(self):
         self.workdir = tempfile.mkdtemp()
-        self.builder = DirBuilder(self.workdir, self.uris)
+        self.builder = CellMLBuilder(self.workdir, '')
 
     def tearDown(self):
         shutil.rmtree(self.workdir)
 
-    def test_process_basic(self):
+    def test_run_basic(self):
         uri = self.uris[0]  # beeler_reuter_1977_version01
-        result = self.builder.process(uri)
-        f = open(result).read()
+        self.builder.uri = uri
+        result = self.builder.run()
+        f = open(result['dest']).read()
         self.assert_('<model ' in f)
 
-    def test_process_variant(self):
+    def test_run_variant(self):
         uri = self.uris[8]  # bental_2006_version02_variant03
-        result = self.builder.process(uri)
-        f = open(result).read()
+        self.builder.uri = uri
+        result = self.builder.run()
+        f = open(result['dest']).read()
         self.assert_('<model ' in f)
 
 
-class LiveDirBuilderTestCase(unittest.TestCase):
+class LiveCellMLBuilderTestCase(unittest.TestCase):
     """\
     Will use the full, live PMR instance.
     """
@@ -117,31 +119,31 @@ class LiveDirBuilderTestCase(unittest.TestCase):
 
     def setUp(self):
         self.workdir = tempfile.mkdtemp()
-        self.builder = DirBuilder(self.workdir, [])
+        self.builder = CellMLBuilder(self.workdir, [])
 
     def tearDown(self):
         pass
 
     def test_001_breakuri(self):
         urilist = get_pmr_urilist()
-        LiveDirBuilderTestCase.urilist = urilist
+        LiveCellMLBuilderTestCase.urilist = urilist
         output = [self.builder.breakuri(os.path.basename(i)) for i in urilist]
         self.assertEqual(len(urilist), len(output))
 
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(BaseDirBuilderTestCase))
-    suite.addTest(unittest.makeSuite(MainDirBuilderTestCase))
-    suite.addTest(unittest.makeSuite(LiveDirBuilderTestCase))
+    suite.addTest(unittest.makeSuite(BaseCellMLBuilderTestCase))
+    suite.addTest(unittest.makeSuite(MainCellMLBuilderTestCase))
+    suite.addTest(unittest.makeSuite(LiveCellMLBuilderTestCase))
     return suite
 
 def cmd_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(BaseDirBuilderTestCase))
-    suite.addTest(unittest.makeSuite(MainDirBuilderTestCase))
+    suite.addTest(unittest.makeSuite(BaseCellMLBuilderTestCase))
+    suite.addTest(unittest.makeSuite(MainCellMLBuilderTestCase))
     if testlive:
-        suite.addTest(unittest.makeSuite(LiveDirBuilderTestCase))
+        suite.addTest(unittest.makeSuite(LiveCellMLBuilderTestCase))
     return suite
 
 if __name__ == '__main__':
