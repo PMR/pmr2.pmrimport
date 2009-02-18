@@ -1,5 +1,5 @@
 import re
-import urllib
+import urllib, urllib2
 import os, os.path
 import logging
 from cStringIO import StringIO
@@ -16,7 +16,7 @@ def get_pmr_urilist(filelisturi):
 
     # XXX getPcenv_session_uri can be used for session uri
     # XXX likewise for curation, but curation flags need to be defined.
-    return urllib.urlopen(filelisturi).read().split()
+    return urllib2.urlopen(filelisturi).read().split()
 
 def prepare_logger(loglevel):
     formatter = logging.Formatter('%(message)s')
@@ -30,8 +30,8 @@ def prepare_logger(loglevel):
 class CellMLBuilder(object):
 
     # TODO
-    # * extract images from tmpdoc
-    #   - correction of image links to relative paths within the same dir
+    # * correction of image links to relative paths within the same dir
+    #   within tmpdoc.
     # * download PCEnv sessions
     #   - correct session URIs to local relative links
     #   - download XUL files and update reference to local
@@ -57,11 +57,11 @@ class CellMLBuilder(object):
         """
 
         try:
-            x, citation, version, variant, part, x = \
+            x, self.citation, self.version, self.variant, self.part, x = \
                 self.re_breakuri.split(baseuri)
         except ValueError:
             raise ValueError("'%s' is an invalid base uri" % baseuri)
-        return citation, version, variant, part
+        return self.citation, self.version, self.variant, self.part
 
     def mkdir(self, *a):
         """\
@@ -79,51 +79,77 @@ class CellMLBuilder(object):
         Downloads data from source to destination.
         """
 
-        s_fd = urllib.urlopen(source)
         d_fd = open(dest, 'w')
-        data = s_fd.read()
-        result = {}
-        if processor:
-            data, result = processor(data)
-        d_fd.write(data)
-        return result
 
-    def download_cellml(self, uri):
-        self.log.debug('Downloading CellML from: %s', uri)
-        dest = self.prepare_cellml_path(uri)
-        result = self.download(uri + '/download', dest, self.process_cellml)
-        self.log.debug('CellML saved to %s', dest)
-        result['dest'] = dest
-        return result
+        try:
+            s_fd = urllib2.urlopen(source)
+        except urllib2.HTTPError, e:
+            self.log.warning('HTTP %s on %s', e.code, source)
+            return
+
+        data = s_fd.read()
+
+        if processor:
+            data = processor(data)
+        d_fd.write(data)
+
+    def download_cellml(self):
+        self.log.debug('.d/l cellml: %s', self.uri)
+        dest = self.prepare_cellml_path()
+        self.download(self.uri + '/download', dest, self.process_cellml)
+        self.log.debug('.w cellml: %s', dest)
+        self.result['dest'] = dest
 
     def process_cellml(self, data):
-        result = {}
         dom = lxml.etree.parse(StringIO(data))
         images = dom.xpath('.//tmpdoc:imagedata/@fileref', 
             namespaces={'tmpdoc': 'http://cellml.org/tmp-documentation'})
-        return data, result
+        self.download_images(images)
+        return data
 
-    def prepare_cellml_path(self, uri):
+    def download_images(self, images):
+        """\
+        Downloads the images and returns the list of uri fragments.
+        """
+        for i in images:
+            uri = urllib.basejoin(self.uri, i)
+            dest = self.build_path(os.path.basename(uri))
+            self.log.debug('..d/l image: %s', uri)
+            self.download(uri, dest)
+            self.log.debug('..w image: %s', dest)
+        return images
+
+    def build_path(self, *path):
+        return os.path.join(self.workdir, self.citation, self.version, *path)
+
+    def prepare_cellml_path(self):
         """\
         This creates the base directory structure and returns the
         location of the destination of the CellML file.
         """
 
-        baseuri = os.path.basename(uri)
-        citation, version, variant, part = self.breakuri(baseuri)
-        self.mkdir(citation)
-        self.mkdir(citation, version)
-        cellml_path = os.path.join(
-            self.workdir, citation, version,
-            self.re_clean_name.sub('\\1.cellml', baseuri)
+        # preparation
+        self.baseuri = os.path.basename(self.uri)
+        self.breakuri(self.baseuri)
+
+        self.mkdir(self.citation)
+        self.mkdir(self.citation, self.version)
+        cellml_path = self.build_path(
+            self.re_clean_name.sub('\\1.cellml', self.baseuri)
         )
         return cellml_path
 
+    def get_result(self, key):
+        return self.result.get(key, None)
+
     def run(self):
-        # returns location of destination of files downloaded
-        # XXX should be logging this
-        result = self.download_cellml(self.uri)
-        return result
+        """\
+        Processes the CellML URI in here.
+        """
+
+        self.download_cellml()
+        # self.download_session()
+        # self.get_curation()
 
 
 class DirBuilder(object):

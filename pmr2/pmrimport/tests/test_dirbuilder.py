@@ -50,7 +50,8 @@ class BaseCellMLBuilderTestCase(unittest.TestCase):
 
     def test_prepare_cellml_path(self):
         uri = 'http://www.cellml.org/models/beeler_reuter_1977_version01'
-        result = self.builder.prepare_cellml_path(uri)
+        self.builder.uri = uri
+        result = self.builder.prepare_cellml_path()
         citation, version, variant, part = \
             self.builder.breakuri(os.path.basename(uri))
         self.assert_(os.path.isdir(os.path.join(
@@ -97,15 +98,15 @@ class MainCellMLBuilderTestCase(unittest.TestCase):
     def test_run_basic(self):
         uri = self.uris[0]  # beeler_reuter_1977_version01
         self.builder.uri = uri
-        result = self.builder.run()
-        f = open(result['dest']).read()
+        self.builder.run()
+        f = open(self.builder.get_result('dest')).read()
         self.assert_('<model ' in f)
 
     def test_run_variant(self):
         uri = self.uris[8]  # bental_2006_version02_variant03
         self.builder.uri = uri
-        result = self.builder.run()
-        f = open(result['dest']).read()
+        self.builder.run()
+        f = open(self.builder.get_result('dest')).read()
         self.assert_('<model ' in f)
 
 
