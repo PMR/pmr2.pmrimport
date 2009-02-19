@@ -197,6 +197,8 @@ class LiveBuilderTestCase(unittest.TestCase):
         self.builder.files = URIS
         result = self.builder._run()
         self.assertEqual(len(result), len(URIS))
+        for i in result.values():
+            self.assert_(not i['exists'])
         # XXX more assertions can be nice.
 
 

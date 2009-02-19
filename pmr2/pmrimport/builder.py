@@ -129,7 +129,12 @@ class CellMLBuilder(object):
             # don't close it in here.
         else:
             if os.path.exists(dest):
-                self.log.warning('%s already exists!', dest)
+                orig = open(dest).read()
+                if data == orig:
+                    # nothing else to do
+                    return None
+                self.log.warning('%s is different from %s, which exists!',
+                    source, dest)
                 self.result['exists'].append((dest, source))
                 return None
             d_fd = open(dest, 'w')
