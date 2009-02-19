@@ -30,6 +30,43 @@ URIS = [
 # XXX bad practice in here
 # many of these tests rely on the PMR being online
 
+class DownloadMonitorTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.d = DownloadMonitor()
+
+    def tearDown(self):
+        pass
+
+    def test_monitor_basic(self):
+        self.d.remember(URIS[0], '0')
+        self.d.remember(URIS[1], '1')
+        self.d.remember(URIS[2], '2')
+        self.assert_(self.d.check(URIS[0], '0'))
+        self.assert_(self.d.check(URIS[1], '1'))
+        self.assert_(self.d.check(URIS[2], '2'))
+        self.assert_(not self.d.check(URIS[3], '3'))
+
+    def test_monitor_dupe(self):
+        self.d.remember(URIS[0], '0')
+        self.d.remember(URIS[0], '1')
+        self.d.remember(URIS[0], '2')
+        self.assert_(self.d.check(URIS[0], '0'))
+        self.assert_(self.d.check(URIS[0], '1'))
+        self.assert_(self.d.check(URIS[0], '2'))
+        self.assert_(not self.d.check(URIS[0], '3'))
+
+    def test_monitor_overwrite(self):
+        # doesn't really handle it...
+        self.d.remember(URIS[0], '0')
+        self.d.remember(URIS[1], '0')
+        self.d.remember(URIS[2], '0')
+        self.assert_(self.d.check(URIS[0], '0'))
+        self.assert_(self.d.check(URIS[1], '0'))
+        self.assert_(self.d.check(URIS[2], '0'))
+        self.assert_(not self.d.check(URIS[1], '1'))
+        self.assert_(not self.d.check(URIS[2], '2'))
+
 class BaseCellMLBuilderTestCase(unittest.TestCase):
 
     def setUp(self):
@@ -205,6 +242,7 @@ class LiveBuilderTestCase(unittest.TestCase):
 def test_suite():
     prepare_logger()
     suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(DownloadMonitorTestCase))
     suite.addTest(unittest.makeSuite(BaseCellMLBuilderTestCase))
     suite.addTest(unittest.makeSuite(LiveBuilderTestCase))
     return suite
@@ -212,6 +250,7 @@ def test_suite():
 def cmd_suite():
     prepare_logger()
     suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(DownloadMonitorTestCase))
     suite.addTest(unittest.makeSuite(BaseCellMLBuilderTestCase))
     if testlive:
         suite.addTest(unittest.makeSuite(LiveBuilderTestCase))

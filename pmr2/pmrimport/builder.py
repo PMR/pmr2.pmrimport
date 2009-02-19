@@ -34,7 +34,31 @@ def prepare_logger(loglevel=logging.ERROR):
     logger.setLevel(loglevel)
 
 
+class DownloadMonitor(object):
+    """\
+    A class that remembers downloads
+    """
+    # nice feature to have here is to provide caching and download
+    # methods.
+
+    def __init__(self):
+        self.d = {}
+
+    def check(self, source, dest):
+        return source in self.d and dest in self.d[source]
+    
+    def remember(self, source, dest):
+        if not source in self.d:
+            self.d[source] = set()
+        self.d[source].add(dest)
+
+
 class CellMLBuilder(object):
+    """\
+    Handles the downloading of CellML files, correction and fetching
+    the resources referenced by it (also correcting uris of those
+    resources).
+    """
 
     # TODO
     # * correction of image file names to remove /download, /view and 
@@ -52,10 +76,11 @@ class CellMLBuilder(object):
 
     re_clean_name = re.compile('_version[0-9]{2}(.*)$')
 
-    def __init__(self, workdir, uri):
+    def __init__(self, workdir, uri, downloaded=None):
         self.uri = uri
         self.workdir = workdir
         self.log = logging.getLogger('dirbuilder')
+        self.downloaded = downloaded
         self.result = {
             'cellml': None,
             'images': [],
@@ -107,6 +132,10 @@ class CellMLBuilder(object):
             else:
                 d_fd.write(data)
 
+        if self.downloaded and self.downloaded.check(source, dest):
+            self.log.info('..CACHED %s -> %s', source, dest)
+            return
+
         try:
             s_fd = urllib2.urlopen(source)
         except urllib2.HTTPError, e:
@@ -140,6 +169,10 @@ class CellMLBuilder(object):
             d_fd = open(dest, 'w')
             write(data)
             d_fd.close()
+
+        # downloaded
+        if self.downloaded:
+            self.downloaded.remember(source, dest)
 
     def get_baseuri(self, uri):
         frags = uri.split('/')
@@ -301,6 +334,7 @@ class DirBuilder(object):
         prepare_logger(loglevel)
         self.log = logging.getLogger('dirbuilder')
         self.summary = {}
+        self.downloaded = DownloadMonitor()
 
     def _run(self):
         """\
@@ -323,7 +357,7 @@ class DirBuilder(object):
             self.log.info('File list already defined')
         self.log.info('Processing %d URIs...' % len(self.files))
         for i in self.files:
-            processor = CellMLBuilder(self.workdir, i)
+            processor = CellMLBuilder(self.workdir, i, self.downloaded)
             result = processor.run()
             self.summary[i] = result
             self.log.info('Processed: %s', i)
