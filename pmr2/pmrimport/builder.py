@@ -314,12 +314,15 @@ class DirBuilder(object):
         if not self.files:
             self.log.info('Getting file list from "%s"...' % self.filelisturi)
             self.files = get_pmr_urilist(self.filelisturi)
+        else:
+            self.log.info('File list already defined')
         self.log.info('Processing %d URIs...' % len(self.files))
         for i in self.files:
             processor = CellMLBuilder(self.workdir, i)
             result = processor.run()
             self.summary[i] = result
             self.log.info('Processed: %s', i)
+        return self.summary
 
     def run(self):
         try:
