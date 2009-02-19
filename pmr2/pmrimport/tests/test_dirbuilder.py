@@ -162,7 +162,12 @@ class BaseCellMLBuilderTestCase(unittest.TestCase):
         f = open(self.builder.result['session'])
         result = f.read()
         f.close()
-        self.assert_(result.startswith('<?xml version="1.0"?>\n<RDF:RDF'))
+        self.assert_(result.startswith('<?xml version='))
+        self.assert_('<RDF:RDF' in result)
+        self.assert_('/download' not in result)
+        # the trailing cmeta id fragments remain
+        self.assert_(self.builder.cellml_filename + '#' in result)
+        self.assert_('.xul/' not in result)
 
 
 class FullCellMLBuilderTestCase(unittest.TestCase):

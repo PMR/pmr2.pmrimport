@@ -9,8 +9,13 @@ import lxml.etree
 CELLML_FILE_LIST = 'http://www.cellml.org/models/list_txt'
 CELLML_NSMAP = {
     'tmpdoc': 'http://cellml.org/tmp-documentation',
+    'pcenv': 'http://www.cellml.org/tools/pcenv/',
+    'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
 }
 PCENV_SESSION_FRAG = '/getPcenv_session_uri'
+BAD_FRAG = [
+    'attachment_download',
+]
 
 
 def get_pmr_urilist(filelisturi):
@@ -98,7 +103,7 @@ class CellMLBuilder(object):
         def write(data):
             # if data implements write (i.e. dom), use that instead.
             if hasattr(data, 'write'):
-                data.write(d_fd)
+                data.write(d_fd, encoding='utf-8', xml_declaration=True)
             else:
                 d_fd.write(data)
 
@@ -131,10 +136,35 @@ class CellMLBuilder(object):
             write(data)
             d_fd.close()
 
+    def get_baseuri(self, uri):
+        frags = uri.split('/')
+        #for b in BAD_FRAG:
+        #    try:
+        #        frags = frags[:frags.index(b)]
+        #    except:
+        #        pass
+        return frags.pop()
+
+    @property
+    def cellml_download_uri(self):
+        return self.uri + '/download'
+
+    @property
+    def cellml_filename(self):
+        return self.defaultname + '.cellml'
+
+    @property
+    def session_filename(self):
+        return self.defaultname + '.session.xml'
+
+    @property
+    def xul_filename(self):
+        return self.defaultname + '.xul'
+
     def download_cellml(self):
         self.log.debug('.d/l cellml: %s', self.uri)
         dest = self.result['cellml']
-        self.download(self.uri + '/download', dest, self.process_cellml)
+        self.download(self.cellml_download_uri, dest, self.process_cellml)
         self.log.debug('.w cellml: %s', dest)
 
     def process_cellml(self, data):
@@ -143,7 +173,6 @@ class CellMLBuilder(object):
             namespaces=CELLML_NSMAP)
         self.download_images(images)
         # update the dom nodes
-
         self.process_cellml_dom(dom)
         return dom
 
@@ -156,7 +185,7 @@ class CellMLBuilder(object):
             namespaces=CELLML_NSMAP)
         for i in imagedata:
             if 'fileref' in i.attrib:
-                i.attrib['fileref'] = os.path.basename(i.attrib['fileref'])
+                i.attrib['fileref'] = self.get_baseuri(i.attrib['fileref'])
 
     def download_images(self, images):
         """\
@@ -164,7 +193,7 @@ class CellMLBuilder(object):
         """
         for i in images:
             uri = urllib.basejoin(self.uri, i)
-            dest = self.path_join(os.path.basename(uri))
+            dest = self.path_join(self.get_baseuri(uri))
             self.log.debug('..d/l image: %s', uri)
             self.download(uri, dest)
             self.log.debug('..w image: %s', dest)
@@ -181,27 +210,54 @@ class CellMLBuilder(object):
         """
 
         # preparation
-        self.baseuri = os.path.basename(self.uri)
+        self.baseuri = self.get_baseuri(self.uri)
         self.breakuri(self.baseuri)
 
         self.mkdir(self.citation)
         self.mkdir(self.citation, self.version)
-        cellml_path = self.path_join(
-            self.re_clean_name.sub('\\1.cellml', self.baseuri)
-        )
+        self.defaultname = self.path_join(
+            self.re_clean_name.sub('\\1', self.baseuri))
+        cellml_path = self.cellml_filename
         self.result['cellml'] = cellml_path
         return cellml_path
+
+    def process_session(self, data):
+        # XXX quick replace
+        data = data.replace(self.cellml_download_uri, self.cellml_filename)
+
+        dom = lxml.etree.parse(StringIO(data))
+        xulpath = dom.xpath('.//rdf:Description[@pcenv:externalurl]',
+            namespaces=CELLML_NSMAP)
+        # get and update the XUL file
+        for en in xulpath:
+            self.download_xul(en)
+        return dom
 
     def download_session(self):
         session_uri = self.get_session_uri()
         if not session_uri:
             return
         self.log.debug('..d/l session: %s', session_uri)
-        session_file = self.path_join(os.path.basename(session_uri))
-        self.result['session'] = session_file
-        self.download(session_uri, session_file)
+        self.result['session'] = self.session_filename
+        self.download(session_uri, self.session_filename, self.process_session)
+        self.log.debug('..w session: %s', self.session_filename)
+
+    def download_xul(self, node):
+        # Since this is the end step, going to combine the processing
+        # of the URI of the node within here also.
+        xul_uri = node.attrib[
+            '{http://www.cellml.org/tools/pcenv/}externalurl']
+        self.log.debug('..d/l xul: %s', xul_uri)
+        self.download(xul_uri, self.xul_filename)
+        self.log.debug('..w xul: %s', self.session_filename)
+        # correction
+        node.attrib['{http://www.cellml.org/tools/pcenv/}externalurl'] = \
+            self.xul_filename
 
     def get_session_uri(self):
+        # not making this a property because this fetches an external
+        # uri, but I supposed results can be cached... but in the
+        # interest of KISS (for me anyway)...
         session = StringIO()
         self.download(self.uri + PCENV_SESSION_FRAG, session)
         session = session.getvalue() or None
@@ -220,6 +276,7 @@ class CellMLBuilder(object):
         self.prepare_path()
         self.download_cellml()
         self.download_session()
+        return self.result
         # self.get_curation()
 
 
@@ -238,6 +295,7 @@ class DirBuilder(object):
         self.filelisturi = CELLML_FILE_LIST
         prepare_logger(loglevel)
         self.log = logging.getLogger('dirbuilder')
+        self.summary = {}
 
     def _run(self):
         """\
@@ -260,6 +318,7 @@ class DirBuilder(object):
         for i in self.files:
             processor = CellMLBuilder(self.workdir, i)
             result = processor.run()
+            self.summary[i] = result
             self.log.info('Processed: %s', i)
 
     def run(self):
