@@ -7,6 +7,10 @@ from cStringIO import StringIO
 import lxml.etree
 
 CELLML_FILE_LIST = 'http://www.cellml.org/models/list_txt'
+CELLML_NSMAP = {
+    'tmpdoc': 'http://cellml.org/tmp-documentation',
+}
+PCENV_SESSION_FRAG = '/getPcenv_session_uri'
 
 
 def get_pmr_urilist(filelisturi):
@@ -14,11 +18,9 @@ def get_pmr_urilist(filelisturi):
     Returns list of CellML files.
     """
 
-    # XXX getPcenv_session_uri can be used for session uri
-    # XXX likewise for curation, but curation flags need to be defined.
     return urllib2.urlopen(filelisturi).read().split()
 
-def prepare_logger(loglevel):
+def prepare_logger(loglevel=logging.ERROR):
     formatter = logging.Formatter('%(message)s')
     logger = logging.getLogger('dirbuilder')
     handler = logging.StreamHandler()
@@ -30,9 +32,9 @@ def prepare_logger(loglevel):
 class CellMLBuilder(object):
 
     # TODO
-    # * correction of image links to relative paths within the same dir
-    #   within tmpdoc.
-    # * download PCEnv sessions
+    # * correction of image file names to remove /download, /view and 
+    #   the like
+    # * PCEnv session links
     #   - correct session URIs to local relative links
     #   - download XUL files and update reference to local
 
@@ -49,7 +51,13 @@ class CellMLBuilder(object):
         self.uri = uri
         self.workdir = workdir
         self.log = logging.getLogger('dirbuilder')
-        self.result = {}
+        self.result = {
+            'cellml': None,
+            'images': [],
+            'session': None,
+            'missing': [],
+            'exists': [],
+        }
 
     def breakuri(self, baseuri):
         """\
@@ -77,35 +85,78 @@ class CellMLBuilder(object):
     def download(self, source, dest, processor=None):
         """\
         Downloads data from source to destination.
+
+        source -
+            uri.
+        dest -
+            file name of destination.
+            alternately, a file-like object may be supplied.
+        processor -
+            function or method to process results.
         """
 
-        d_fd = open(dest, 'w')
+        def write(data):
+            # if data implements write (i.e. dom), use that instead.
+            if hasattr(data, 'write'):
+                data.write(d_fd)
+            else:
+                d_fd.write(data)
 
         try:
             s_fd = urllib2.urlopen(source)
         except urllib2.HTTPError, e:
-            self.log.warning('HTTP %s on %s', e.code, source)
-            return
+            if e.code >= 400:
+                self.result['missing'].append(source)
+                self.log.warning('HTTP %d on %s', e.code, source)
+            return None
 
         data = s_fd.read()
+        s_fd.close()
 
         if processor:
             data = processor(data)
-        d_fd.write(data)
+
+        if hasattr(dest, 'write'):
+            # assume a valid stream object
+            d_fd = dest
+            write(data)
+            # since destination is opened outside of this method, we
+            # don't close it in here.
+        else:
+            if os.path.exists(dest):
+                self.log.warning('%s already exists!', dest)
+                self.result['exists'].append((dest, source))
+                return None
+            d_fd = open(dest, 'w')
+            write(data)
+            d_fd.close()
 
     def download_cellml(self):
         self.log.debug('.d/l cellml: %s', self.uri)
-        dest = self.prepare_cellml_path()
+        dest = self.result['cellml']
         self.download(self.uri + '/download', dest, self.process_cellml)
         self.log.debug('.w cellml: %s', dest)
-        self.result['dest'] = dest
 
     def process_cellml(self, data):
         dom = lxml.etree.parse(StringIO(data))
-        images = dom.xpath('.//tmpdoc:imagedata/@fileref', 
-            namespaces={'tmpdoc': 'http://cellml.org/tmp-documentation'})
+        images = dom.xpath('.//tmpdoc:imagedata/@fileref',
+            namespaces=CELLML_NSMAP)
         self.download_images(images)
-        return data
+        # update the dom nodes
+
+        self.process_cellml_dom(dom)
+        return dom
+
+    def process_cellml_dom(self, dom):
+        """\
+        Updates the DOM to have correct relative links.
+        """
+
+        imagedata = dom.xpath('.//tmpdoc:imagedata',
+            namespaces=CELLML_NSMAP)
+        for i in imagedata:
+            if 'fileref' in i.attrib:
+                i.attrib['fileref'] = os.path.basename(i.attrib['fileref'])
 
     def download_images(self, images):
         """\
@@ -113,16 +164,17 @@ class CellMLBuilder(object):
         """
         for i in images:
             uri = urllib.basejoin(self.uri, i)
-            dest = self.build_path(os.path.basename(uri))
+            dest = self.path_join(os.path.basename(uri))
             self.log.debug('..d/l image: %s', uri)
             self.download(uri, dest)
             self.log.debug('..w image: %s', dest)
+            self.result['images'].append(dest)
         return images
 
-    def build_path(self, *path):
+    def path_join(self, *path):
         return os.path.join(self.workdir, self.citation, self.version, *path)
 
-    def prepare_cellml_path(self):
+    def prepare_path(self):
         """\
         This creates the base directory structure and returns the
         location of the destination of the CellML file.
@@ -134,10 +186,28 @@ class CellMLBuilder(object):
 
         self.mkdir(self.citation)
         self.mkdir(self.citation, self.version)
-        cellml_path = self.build_path(
+        cellml_path = self.path_join(
             self.re_clean_name.sub('\\1.cellml', self.baseuri)
         )
+        self.result['cellml'] = cellml_path
         return cellml_path
+
+    def download_session(self):
+        session_uri = self.get_session_uri()
+        if not session_uri:
+            return
+        self.log.debug('..d/l session: %s', session_uri)
+        session_file = self.path_join(os.path.basename(session_uri))
+        self.result['session'] = session_file
+        self.download(session_uri, session_file)
+
+    def get_session_uri(self):
+        session = StringIO()
+        self.download(self.uri + PCENV_SESSION_FRAG, session)
+        session = session.getvalue() or None
+        if session:
+            session = urllib.basejoin(self.uri, session)
+        return session
 
     def get_result(self, key):
         return self.result.get(key, None)
@@ -147,8 +217,9 @@ class CellMLBuilder(object):
         Processes the CellML URI in here.
         """
 
+        self.prepare_path()
         self.download_cellml()
-        # self.download_session()
+        self.download_session()
         # self.get_curation()
 
 

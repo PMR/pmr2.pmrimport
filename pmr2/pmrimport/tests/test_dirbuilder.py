@@ -8,14 +8,36 @@ from cStringIO import StringIO
 from pmr2.pmrimport.builder import *
 
 
+# XXX bad practice in here
+# many of these tests rely on the PMR being online
+
 class BaseCellMLBuilderTestCase(unittest.TestCase):
+
+    uris = [
+        'http://www.cellml.org/models/beeler_reuter_1977_version01',
+        'http://www.cellml.org/models/beeler_reuter_1977_version02',
+        'http://www.cellml.org/models/beeler_reuter_1977_version03',
+        'http://www.cellml.org/models/beeler_reuter_1977_version04',
+        'http://www.cellml.org/models/beeler_reuter_1977_version05',
+        'http://www.cellml.org/models/beeler_reuter_1977_version06',
+        'http://www.cellml.org/models/beeler_reuter_1977_version07',
+        'http://www.cellml.org/models/beeler_reuter_1977_version08',
+        'http://www.cellml.org/models/bental_2006_version02_variant03',
+        'http://www.cellml.org/models/bental_2006_version02_variant02',
+        'http://www.cellml.org/models/bental_2006_version02_variant01',
+        'http://www.cellml.org/models/bental_2006_version02',
+        'http://www.cellml.org/models/bental_2006_version01_variant03',
+        'http://www.cellml.org/models/bental_2006_version01_variant02',
+        'http://www.cellml.org/models/bental_2006_version01_variant01',
+        'http://www.cellml.org/models/bental_2006_version01',
+    ]
 
     def setUp(self):
         self.workdir = tempfile.mkdtemp()
         self.builder = CellMLBuilder(self.workdir, '')
 
     def tearDown(self):
-        pass
+        shutil.rmtree(self.workdir)
 
     def test_breakuri_error(self):
         tests = (
@@ -48,10 +70,10 @@ class BaseCellMLBuilderTestCase(unittest.TestCase):
             self.assertEqual(self.builder.breakuri(i), o,
                 "input '%s' failed" % i)
 
-    def test_prepare_cellml_path(self):
-        uri = 'http://www.cellml.org/models/beeler_reuter_1977_version01'
+    def test_prepare_path(self):
+        uri = self.uris[0]  # beeler_reuter_1977_version01
         self.builder.uri = uri
-        result = self.builder.prepare_cellml_path()
+        result = self.builder.prepare_path()
         citation, version, variant, part = \
             self.builder.breakuri(os.path.basename(uri))
         self.assert_(os.path.isdir(os.path.join(
@@ -63,54 +85,87 @@ class BaseCellMLBuilderTestCase(unittest.TestCase):
         self.assertEqual(result, os.path.join(
             self.workdir, citation, version, 'beeler_reuter_1977.cellml'))
 
-
-class MainCellMLBuilderTestCase(unittest.TestCase):
-    """\
-    Will use the PMR instance, but only partial list of files supplied here.
-    """
-
-    uris = [
-        'http://www.cellml.org/models/beeler_reuter_1977_version01',
-        'http://www.cellml.org/models/beeler_reuter_1977_version02',
-        'http://www.cellml.org/models/beeler_reuter_1977_version03',
-        'http://www.cellml.org/models/beeler_reuter_1977_version04',
-        'http://www.cellml.org/models/beeler_reuter_1977_version05',
-        'http://www.cellml.org/models/beeler_reuter_1977_version06',
-        'http://www.cellml.org/models/beeler_reuter_1977_version07',
-        'http://www.cellml.org/models/beeler_reuter_1977_version08',
-        'http://www.cellml.org/models/bental_2006_version02_variant03',
-        'http://www.cellml.org/models/bental_2006_version02_variant02',
-        'http://www.cellml.org/models/bental_2006_version02_variant01',
-        'http://www.cellml.org/models/bental_2006_version02',
-        'http://www.cellml.org/models/bental_2006_version01_variant03',
-        'http://www.cellml.org/models/bental_2006_version01_variant02',
-        'http://www.cellml.org/models/bental_2006_version01_variant01',
-        'http://www.cellml.org/models/bental_2006_version01',
-    ]
-
-    def setUp(self):
-        self.workdir = tempfile.mkdtemp()
-        self.builder = CellMLBuilder(self.workdir, '')
-
-    def tearDown(self):
-        shutil.rmtree(self.workdir)
-
-    def test_run_basic(self):
+    def test_path_join(self):
         uri = self.uris[0]  # beeler_reuter_1977_version01
         self.builder.uri = uri
-        self.builder.run()
-        f = open(self.builder.get_result('dest')).read()
-        self.assert_('<model ' in f)
+        self.builder.prepare_path()
+        p = self.builder.path_join('a')
+        self.assertEqual(p, os.path.join(
+            self.workdir, self.builder.citation, self.builder.version, 'a'))
+        p = self.builder.path_join('a', 'b')
+        self.assertEqual(p, os.path.join(
+            self.workdir, self.builder.citation, self.builder.version, 
+            'a', 'b'))
 
-    def test_run_variant(self):
+    def test_download(self):
+        uri = 'http://www.example.com/notfound'
+        notfound = os.path.join(self.workdir, 'notfound')
+        self.builder.download(uri, notfound)
+        self.assert_(not os.path.exists(notfound))
+
+        uri = 'http://www.example.com/'
+        found = os.path.join(self.workdir, 'found')
+        self.builder.download(uri, found)
+        self.assert_(os.path.exists(found))
+
+    def test_download_cellml_basic(self):
+        uri = self.uris[0]  # beeler_reuter_1977_version01
+        self.builder.uri = uri
+        self.builder.prepare_path()
+        self.builder.download_cellml()
+        self.assertEquals(self.builder.get_result('cellml'),
+            os.path.join(self.workdir, 'beeler_reuter_1977', '01',
+                'beeler_reuter_1977.cellml')
+        )
+        f = open(self.builder.get_result('cellml')).read()
+        self.assert_('<model ' in f)
+        self.assert_('cell_diagram.gif' in f)
+        self.assert_('/cell_diagram.gif' not in f)
+
+        self.assertEquals(self.builder.get_result('cellml'),
+            os.path.join(self.workdir, 'beeler_reuter_1977', '01',
+                'beeler_reuter_1977.cellml')
+        )
+
+        self.assert_(os.path.isfile(os.path.join(
+            self.workdir, 'beeler_reuter_1977', '01', 'cell_diagram.gif'))
+        )
+
+    def test_download_cellml_variant(self):
         uri = self.uris[8]  # bental_2006_version02_variant03
         self.builder.uri = uri
-        self.builder.run()
-        f = open(self.builder.get_result('dest')).read()
+        self.builder.prepare_path()
+        self.builder.download_cellml()
+        f = open(self.builder.get_result('cellml')).read()
         self.assert_('<model ' in f)
 
+    def test_get_session_uri(self):
+        uri = self.uris[0]  # beeler_reuter_1977_version01
+        self.builder.uri = uri
+        session = self.builder.get_session_uri()
+        self.assertEqual(session, None)
 
-class LiveCellMLBuilderTestCase(unittest.TestCase):
+        uri = self.uris[7]  # beeler_reuter_1977_version08
+        self.builder.uri = uri
+        session = self.builder.get_session_uri()
+        self.assert_(session.startswith('http'))
+        self.assert_(session.endswith(
+            '/cellmlmodels/pcenv_session/beeler_reuter_1977/' \
+            'beeler_reuter_1977_version08.session'
+        ))
+
+    def test_download_session(self):
+        uri = self.uris[7]  # beeler_reuter_1977_version08
+        self.builder.uri = uri
+        self.builder.prepare_path()
+        self.builder.download_session()
+        f = open(self.builder.result['session'])
+        result = f.read()
+        f.close()
+        self.assert_(result.startswith('<?xml version="1.0"?>\n<RDF:RDF'))
+
+
+class FullCellMLBuilderTestCase(unittest.TestCase):
     """\
     Will use the full, live PMR instance.
     """
@@ -123,28 +178,28 @@ class LiveCellMLBuilderTestCase(unittest.TestCase):
         self.builder = CellMLBuilder(self.workdir, [])
 
     def tearDown(self):
-        pass
+        shutil.rmtree(self.workdir)
 
     def test_001_breakuri(self):
-        urilist = get_pmr_urilist()
-        LiveCellMLBuilderTestCase.urilist = urilist
+        urilist = get_pmr_urilist(CELLML_FILE_LIST)
+        FullCellMLBuilderTestCase.urilist = urilist
         output = [self.builder.breakuri(os.path.basename(i)) for i in urilist]
         self.assertEqual(len(urilist), len(output))
 
 
 def test_suite():
+    prepare_logger()
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(BaseCellMLBuilderTestCase))
-    suite.addTest(unittest.makeSuite(MainCellMLBuilderTestCase))
-    suite.addTest(unittest.makeSuite(LiveCellMLBuilderTestCase))
+    suite.addTest(unittest.makeSuite(FullCellMLBuilderTestCase))
     return suite
 
 def cmd_suite():
+    prepare_logger()
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(BaseCellMLBuilderTestCase))
-    suite.addTest(unittest.makeSuite(MainCellMLBuilderTestCase))
     if testlive:
-        suite.addTest(unittest.makeSuite(LiveCellMLBuilderTestCase))
+        suite.addTest(unittest.makeSuite(FullCellMLBuilderTestCase))
     return suite
 
 if __name__ == '__main__':
