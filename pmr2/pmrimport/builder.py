@@ -133,7 +133,7 @@ class CellMLBuilder(object):
                 d_fd.write(data)
 
         if self.downloaded and self.downloaded.check(source, dest):
-            self.log.info('..CACHED %s -> %s', source, dest)
+            self.log.debug('..CACHED %s -> %s', source, dest)
             return
 
         try:
@@ -363,9 +363,24 @@ class DirBuilder(object):
             self.log.info('Processed: %s', i)
         return self.summary
 
+    def print_summary(self):
+        # currently only output summary of errors
+        print ''
+        print '-' * 72
+        print 'Export from PMR complete.  Below are errors encountered.'
+        for k, v in self.summary.iteritems():
+            if v['missing'] or v['exists']:
+                print 'In %s:' % k
+                for i in v['missing']:
+                    print 'Missing: %s' % i
+                for i in v['exists']:
+                    print 'Exists: %s - %s' % i
+        print '-' * 72
+
     def run(self):
         try:
             self._run()
+            self.print_summary()
         except ValueError, e:
             self.log.error('ERROR: %s' % e)
             return 2
