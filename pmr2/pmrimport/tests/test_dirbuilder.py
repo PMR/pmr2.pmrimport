@@ -153,16 +153,16 @@ class BaseCellMLBuilderTestCase(unittest.TestCase):
         self.builder.uri = uri
         self.builder.prepare_path()
         self.builder.download_cellml()
-        self.assertEquals(self.builder.get_result('cellml'),
+        self.assertEquals(self.builder.cellml_filename,
             os.path.join(self.workdir, 'beeler_reuter_1977', '01',
                 'beeler_reuter_1977.cellml')
         )
-        f = open(self.builder.get_result('cellml')).read()
+        f = open(self.builder.cellml_filename).read()
         self.assert_('<model ' in f)
         self.assert_('cell_diagram.gif' in f)
         self.assert_('/cell_diagram.gif' not in f)
 
-        self.assertEquals(self.builder.get_result('cellml'),
+        self.assertEquals(self.builder.cellml_filename,
             os.path.join(self.workdir, 'beeler_reuter_1977', '01',
                 'beeler_reuter_1977.cellml')
         )
@@ -176,7 +176,7 @@ class BaseCellMLBuilderTestCase(unittest.TestCase):
         self.builder.uri = uri
         self.builder.prepare_path()
         self.builder.download_cellml()
-        f = open(self.builder.get_result('cellml')).read()
+        f = open(self.builder.cellml_filename).read()
         self.assert_('<model ' in f)
 
     def test_get_session_uri(self):
@@ -206,7 +206,7 @@ class BaseCellMLBuilderTestCase(unittest.TestCase):
         self.assert_('<RDF:RDF' in result)
         self.assert_('/download' not in result)
         # the trailing cmeta id fragments remain
-        self.assert_(self.builder.cellml_filename + '#' in result)
+        self.assert_(self.builder.result['cellml'] + '#' in result)
         self.assert_('.xul/' not in result)
 
 

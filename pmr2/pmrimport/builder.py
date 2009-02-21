@@ -275,9 +275,18 @@ class CellMLBuilder(object):
         #        pass
         return frags.pop()
 
+    # XXX these properties and proper usage are quite confusing.
+    # please have my appologies.
     @property
     def cellml_download_uri(self):
+        # used for actual download, because this one has been modified
+        # to return the last-modified header.
         return self.uri + '/pmr_download'
+
+    @property
+    def cellml_download_uri2(self):
+        # used for replacement
+        return self.uri + '/download'
 
     @property
     def cellml_filename(self):
@@ -353,7 +362,7 @@ class CellMLBuilder(object):
 
     def process_session(self, data):
         # XXX quick replace
-        data = data.replace(self.cellml_download_uri, self.result['cellml'])
+        data = data.replace(self.cellml_download_uri2, self.result['cellml'])
 
         dom = lxml.etree.parse(StringIO(data))
         xulpath = dom.xpath('.//rdf:Description[@pcenv:externalurl]',
@@ -381,7 +390,7 @@ class CellMLBuilder(object):
         self.download(xul_uri, self.xul_filename)
         self.log.debug('..w xul: %s', self.xul_filename)
         # correction (make relative path using basename)
-        node.attrib[externalurl] = self.path.basename(self.xul_filename)
+        node.attrib[externalurl] = os.path.basename(self.xul_filename)
 
     def get_session_uri(self):
         # not making this a property because this fetches an external

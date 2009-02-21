@@ -28,7 +28,8 @@ setup(name='pmr2.pmrimport',
       zip_safe=False,
       install_requires=[
           'setuptools',
-          'lxml',
+          'lxml>=2.1.0',
+          'mercurial>=0.9.5',
           # -*- Extra requirements: -*-
       ],
       entry_points="""
