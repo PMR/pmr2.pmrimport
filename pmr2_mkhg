@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# pmr_extract - extracts data from pmr
+# pmr2_mkhg - makes the pmr2 hg workspaces from pmr2_pmrextract
 #
 # This software may be used and distributed according to the terms
 # of the GNU General Public License, incorporated herein by reference.
@@ -15,7 +15,7 @@ HELP = """\
 usage: %s <src_dir> <dest_dir>
 
   <src_dir>
-	source dir is the output from pmr_extract
+	source dir is the output from pmr2_pmrextract
   <dest_dir>
 	destination dir; it will be created, must be not already exists.
   -h

@@ -4,6 +4,7 @@ import os
 version = '0.0'
 scripts = [
     'pmr2_pmrextract',
+    'pmr2_mkhg',
 ]
 
 setup(name='pmr2.pmrimport',
