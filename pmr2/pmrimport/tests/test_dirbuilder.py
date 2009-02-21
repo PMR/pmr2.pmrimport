@@ -267,7 +267,7 @@ class WorkspaceBuilderTestCase(unittest.TestCase):
         # Mercurial thinks a file is the same if the datestamp and file
         # size (or just datestamp), there are no difference and so
         # the resulting changeset will overwrite the first one.
-        #self.assertEqual(cc, 2)
+        self.assertEqual(cc, 2)
 
 
 def test_suite():

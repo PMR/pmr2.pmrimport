@@ -2,8 +2,9 @@ import re
 import urllib, urllib2
 import os, os.path
 import logging
+import time
 from cStringIO import StringIO
-from shutil import copy2, copystat
+from shutil import copy, copy2, copystat
 
 import lxml.etree
 from mercurial import ui, hg, revlog, cmdutil, util
@@ -147,13 +148,6 @@ class CellMLBuilder(object):
     resources).
     """
 
-    # TODO
-    # * correction of image file names to remove /download, /view and 
-    #   the like
-    # * PCEnv session links
-    #   - correct session URIs to local relative links
-    #   - download XUL files and update reference to local
-
     re_breakuri = re.compile(
         '^([a-zA-Z\-_]*(?:_[0-9]{4})?)_' \
         '(?:version([0-9]{2}))' \
@@ -232,6 +226,7 @@ class CellMLBuilder(object):
             return None
 
         data = s_fd.read()
+        s_modified = s_fd.headers.getheader('Last-Modified')
         s_fd.close()
 
         if processor:
@@ -257,6 +252,16 @@ class CellMLBuilder(object):
             write(data)
             d_fd.close()
 
+            # set timestamp.
+            if s_modified:
+                if hasattr(os, 'utime'):
+                    s_modstp = time.mktime(time.strptime(s_modified, 
+                        '%a, %d %b %Y %H:%M:%S %Z'))
+                    os.utime(dest, (s_modstp, s_modstp))
+            else:
+                self.log.warning('%s has no timestamp', source)
+
+
         # downloaded
         if self.downloaded:
             self.downloaded.remember(source, dest)
@@ -272,7 +277,7 @@ class CellMLBuilder(object):
 
     @property
     def cellml_download_uri(self):
-        return self.uri + '/download'
+        return self.uri + '/pmr_download'
 
     @property
     def cellml_filename(self):
@@ -288,7 +293,7 @@ class CellMLBuilder(object):
 
     def download_cellml(self):
         self.log.debug('.d/l cellml: %s', self.uri)
-        dest = self.result['cellml']
+        dest = self.cellml_filename
         self.download(self.cellml_download_uri, dest, self.process_cellml)
         self.log.debug('.w cellml: %s', dest)
 
@@ -343,12 +348,12 @@ class CellMLBuilder(object):
         self.defaultname = self.path_join(
             self.re_clean_name.sub('\\1', self.baseuri))
         cellml_path = self.cellml_filename
-        self.result['cellml'] = cellml_path
+        self.result['cellml'] = os.path.basename(cellml_path)
         return cellml_path
 
     def process_session(self, data):
         # XXX quick replace
-        data = data.replace(self.cellml_download_uri, self.cellml_filename)
+        data = data.replace(self.cellml_download_uri, self.result['cellml'])
 
         dom = lxml.etree.parse(StringIO(data))
         xulpath = dom.xpath('.//rdf:Description[@pcenv:externalurl]',
@@ -374,9 +379,9 @@ class CellMLBuilder(object):
         xul_uri = node.attrib[externalurl]
         self.log.debug('..d/l xul: %s', xul_uri)
         self.download(xul_uri, self.xul_filename)
-        self.log.debug('..w xul: %s', self.session_filename)
-        # correction
-        node.attrib[externalurl] = self.xul_filename
+        self.log.debug('..w xul: %s', self.xul_filename)
+        # correction (make relative path using basename)
+        node.attrib[externalurl] = self.path.basename(self.xul_filename)
 
     def get_session_uri(self):
         # not making this a property because this fetches an external
@@ -485,7 +490,9 @@ class WorkspaceBuilder(object):
         self.summary = {}
 
     def list_models(self):
-        return os.listdir(self.source)
+        result = os.listdir(self.source)
+        result.sort()
+        return result
 
     def build_hg(self, name):
         source = os.path.join(self.source, name)
@@ -496,8 +503,9 @@ class WorkspaceBuilder(object):
         repo = hg.repository(u, dest, create=1)
 
         versions = [os.path.join(source, i) for i in os.listdir(source)]
+        versions.sort()
         for vp in versions:
-            self.log.info('copying files from %s to %s', vp, dest)
+            self.log.debug('copying files from %s to %s', vp, dest)
             copytree(vp, dest)
             u = ui.ui(interactive=False)
             u.pushbuffer()  # silence ui
@@ -508,14 +516,16 @@ class WorkspaceBuilder(object):
             files = [i for i in os.listdir(dest)
                 if i != '.hg' and i not in manifest]
             repo.add(files)
-            self.log.info('%d new file(s) added', len(files))
+            self.log.debug('%d new file(s) added', len(files))
             repo.commit([], msg, usr, '')
-            self.log.info(msg)
+            self.log.debug(msg)
 
             b = u.popbuffer().splitlines()
             for i in b:
-                if i:
-                    self.log.warning('HG: %s', i)
+                if i.startswith('nothing changed'):
+                    self.log.warning('HG: %s in %s', i, vp)
+                else:
+                    self.log.debug('HG: %s', i)
 
     def _run(self):
         create_workdir(self.dest)
