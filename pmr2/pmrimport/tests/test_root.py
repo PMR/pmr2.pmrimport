@@ -16,7 +16,7 @@ class RootTestCase(unittest.TestCase):
 
     def test_basic(self):
         o = DirBuilder('tmp', [])
-        o = WorkspaceBuilder()
+        o = WorkspaceBuilder('source', 'dest')
 
 
 def test_suite():

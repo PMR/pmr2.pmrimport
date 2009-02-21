@@ -1,0 +1,48 @@
+#!/usr/bin/env python
+#
+# pmr_extract - extracts data from pmr
+#
+# This software may be used and distributed according to the terms
+# of the GNU General Public License, incorporated herein by reference.
+
+import sys
+import os, os.path
+import logging
+
+from pmr2.pmrimport.builder import *
+
+HELP = """\
+usage: %s <src_dir> <dest_dir>
+
+  <src_dir>
+	source dir is the output from pmr_extract
+  <dest_dir>
+	destination dir; it will be created, must be not already exists.
+  -h
+	prints this help message.
+  -q
+	quiet mode; warnings are displayed.
+  -v
+	verbose mode; debug messages are displayed.
+""" % os.path.basename(__file__)
+
+args = sys.argv[1:]
+if len(args) < 2:
+    print HELP.splitlines()[0]
+    sys.exit(1)
+
+if '-h' in args:
+    print HELP
+    sys.exit(1)
+
+args.reverse()
+source = os.path.realpath(args.pop())
+dest = os.path.realpath(args.pop())
+loglevel = logging.INFO
+if '-q' in args:
+    loglevel = logging.WARNING
+if '-v' in args:
+    loglevel = logging.DEBUG
+
+builder = WorkspaceBuilder(source, dest, loglevel=loglevel)
+sys.exit(builder.run())

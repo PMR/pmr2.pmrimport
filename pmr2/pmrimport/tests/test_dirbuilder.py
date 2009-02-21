@@ -7,6 +7,8 @@ from cStringIO import StringIO
 
 from pmr2.pmrimport.builder import *
 
+from mercurial import hg, ui
+
 URIS = [
     'http://www.cellml.org/models/beeler_reuter_1977_version01',
     'http://www.cellml.org/models/beeler_reuter_1977_version02',
@@ -239,11 +241,41 @@ class LiveBuilderTestCase(unittest.TestCase):
         # XXX more assertions can be nice.
 
 
+class WorkspaceBuilderTestCase(unittest.TestCase):
+    """
+    """
+
+    def setUp(self):
+        self.source = os.path.join(os.path.dirname(__file__), 'pmr_export')
+        self.dest = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.dest)
+
+    def test_run(self):
+        dest = os.path.join(self.dest, 'out')
+        builder = WorkspaceBuilder(self.source, dest)
+        builder.run()
+        self.assert_(os.path.isdir(os.path.join(dest, 'model_0000')))
+        self.assert_(os.path.isfile(os.path.join(dest, 'model_0000', 'data')))
+
+        repodir = os.path.join(dest, 'model_0000')
+
+        r = hg.repository(ui.ui(), repodir)
+        cc = r.changelog.count()
+        # XXX BUG
+        # Mercurial thinks a file is the same if the datestamp and file
+        # size (or just datestamp), there are no difference and so
+        # the resulting changeset will overwrite the first one.
+        #self.assertEqual(cc, 2)
+
+
 def test_suite():
     prepare_logger()
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(DownloadMonitorTestCase))
     suite.addTest(unittest.makeSuite(BaseCellMLBuilderTestCase))
+    suite.addTest(unittest.makeSuite(WorkspaceBuilderTestCase))
     suite.addTest(unittest.makeSuite(LiveBuilderTestCase))
     return suite
 
@@ -252,6 +284,7 @@ def cmd_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(DownloadMonitorTestCase))
     suite.addTest(unittest.makeSuite(BaseCellMLBuilderTestCase))
+    suite.addTest(unittest.makeSuite(WorkspaceBuilderTestCase))
     if testlive:
         suite.addTest(unittest.makeSuite(LiveBuilderTestCase))
     return suite
