@@ -526,7 +526,7 @@ class WorkspaceBuilder(object):
                 if i != '.hg' and i not in manifest]
             repo.add(files)
             self.log.debug('%d new file(s) added', len(files))
-            repo.commit([], msg, usr, '')
+            repo.commit([], msg, usr, '', force=True)
             self.log.debug(msg)
 
             b = u.popbuffer().splitlines()
