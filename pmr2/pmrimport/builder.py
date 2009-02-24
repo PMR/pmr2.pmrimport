@@ -148,6 +148,10 @@ class CellMLBuilder(object):
     resources).
     """
 
+    # TODO
+    # * search and destroy file:// URIs
+    # * make the session CellML file link correction more rigorous (1)
+
     re_breakuri = re.compile(
         '^([a-zA-Z\-_]*(?:_[0-9]{4})?)_' \
         '(?:version([0-9]{2}))' \
@@ -267,13 +271,7 @@ class CellMLBuilder(object):
             self.downloaded.remember(source, dest)
 
     def get_baseuri(self, uri):
-        frags = uri.split('/')
-        #for b in BAD_FRAG:
-        #    try:
-        #        frags = frags[:frags.index(b)]
-        #    except:
-        #        pass
-        return frags.pop()
+        return uri.split('/').pop()
 
     # XXX these properties and proper usage are quite confusing.
     # please have my appologies.
@@ -340,6 +338,8 @@ class CellMLBuilder(object):
         return images
 
     def path_join(self, *path):
+        # XXX method name could use better distinction between local
+        # paths vs URIs.
         return os.path.join(self.workdir, self.citation, self.version, *path)
 
     def prepare_path(self):
@@ -357,11 +357,17 @@ class CellMLBuilder(object):
         self.defaultname = self.path_join(
             self.re_clean_name.sub('\\1', self.baseuri))
         cellml_path = self.cellml_filename
+        # derive filename from filesystem path of CellML file
         self.result['cellml'] = os.path.basename(cellml_path)
         return cellml_path
 
     def process_session(self, data):
         # XXX quick replace
+        # TODO (1) should probably use the name of this session file
+        # to generate the correct CellML filename that it should point
+        # to.  Find all the nodes, correct all references to filenames
+        # which should also correct file:// paths or session that points
+        # to explicit versions.
         data = data.replace(self.cellml_download_uri2, self.result['cellml'])
 
         dom = lxml.etree.parse(StringIO(data))
@@ -389,7 +395,7 @@ class CellMLBuilder(object):
         self.log.debug('..d/l xul: %s', xul_uri)
         self.download(xul_uri, self.xul_filename)
         self.log.debug('..w xul: %s', self.xul_filename)
-        # correction (make relative path using basename)
+        # correction (make relative path using os.path.basename)
         node.attrib[externalurl] = os.path.basename(self.xul_filename)
 
     def get_session_uri(self):

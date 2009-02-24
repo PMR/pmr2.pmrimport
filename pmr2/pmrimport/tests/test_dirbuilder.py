@@ -26,6 +26,8 @@ URIS = [
     'http://www.cellml.org/models/bental_2006_version01_variant02',
     'http://www.cellml.org/models/bental_2006_version01_variant01',
     'http://www.cellml.org/models/bental_2006_version01',
+
+    'http://www.cellml.org/models/noble_varghese_kohl_noble_1998_version07_variant02',
 ]
 
 
@@ -178,6 +180,14 @@ class BaseCellMLBuilderTestCase(unittest.TestCase):
         self.builder.download_cellml()
         f = open(self.builder.cellml_filename).read()
         self.assert_('<model ' in f)
+
+    def test_download_cellml_cmeta_id(self):
+        uri = URIS[16]  # noble_varghese_kohl_noble_1998
+        self.builder.uri = uri
+        self.builder.prepare_path()
+        self.builder.download_cellml()
+        f = open(self.builder.cellml_filename).read()
+        self.assert_('cmeta:id="environment_time"' in f)
 
     def test_get_session_uri(self):
         uri = URIS[0]  # beeler_reuter_1977_version01
