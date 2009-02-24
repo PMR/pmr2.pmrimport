@@ -173,6 +173,7 @@ class CellMLBuilder(object):
             'missing': [],
             'exists': [],
         }
+        self.timestamp = 0
 
     def breakuri(self, baseuri):
         """\
@@ -262,6 +263,8 @@ class CellMLBuilder(object):
                     s_modstp = time.mktime(time.strptime(s_modified, 
                         '%a, %d %b %Y %H:%M:%S %Z'))
                     os.utime(dest, (s_modstp, s_modstp))
+                    if s_modstp > self.timestamp and dest.endswith('.cellml'):
+                        self.timestamp = s_modstp
             else:
                 self.log.warning('%s has no timestamp', source)
 
@@ -409,6 +412,11 @@ class CellMLBuilder(object):
             session = urllib.basejoin(self.uri, session)
         return session
 
+    def finalize(self):
+        # set timestamp on directory
+        if self.timestamp and hasattr(os, 'utime'):
+            os.utime(self.path_join(), (self.timestamp, self.timestamp))
+
     def get_result(self, key):
         return self.result.get(key, None)
 
@@ -420,6 +428,7 @@ class CellMLBuilder(object):
         self.prepare_path()
         self.download_cellml()
         self.download_session()
+        self.finalize()
         return self.result
         # self.get_curation()
 
@@ -522,6 +531,8 @@ class WorkspaceBuilder(object):
         for vp in versions:
             self.log.debug('copying files from %s to %s', vp, dest)
             copytree(vp, dest)
+            st = os.stat(vp)
+            commit_mtime = time.ctime(st.st_mtime)
             u = ui.ui(interactive=False)
             u.pushbuffer()  # silence ui
             repo = hg.repository(u, dest)
@@ -532,7 +543,7 @@ class WorkspaceBuilder(object):
                 if i != '.hg' and i not in manifest]
             repo.add(files)
             self.log.debug('%d new file(s) added', len(files))
-            repo.commit([], msg, usr, '', force=True)
+            repo.commit([], msg, usr, commit_mtime, force=True)
             self.log.debug(msg)
 
             b = u.popbuffer().splitlines()
