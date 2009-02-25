@@ -126,19 +126,34 @@ class DownloadMonitor(object):
     """\
     A class that remembers downloads
     """
-    # nice feature to have here is to provide caching and download
-    # methods.
 
     def __init__(self):
-        self.d = {}
+        self.d = {}  # downloaded
+        self.modified = {}
 
     def check(self, source, dest):
         return source in self.d and dest in self.d[source]
+
+    def cached(self, source):
+        fn = source in self.d and self.d[source][0] or None
+        if fn is None:
+            return fn
+        # sometimes we have a StringIO in here instead
+        if hasattr(fn, 'getvalue'):
+            return fn.getvalue()
+        try:
+            o = open(fn)
+            result = o.read()
+            o.close()
+        except:
+            result = None
+        return result
     
     def remember(self, source, dest):
         if not source in self.d:
-            self.d[source] = set()
-        self.d[source].add(dest)
+            self.d[source] = []
+        if not source in self.d[source]:
+            self.d[source].append(dest)
 
 
 class CellMLBuilder(object):
@@ -218,21 +233,28 @@ class CellMLBuilder(object):
             else:
                 d_fd.write(data)
 
-        if self.downloaded and self.downloaded.check(source, dest):
-            self.log.debug('..CACHED %s -> %s', source, dest)
-            return
+        data = None
+        if self.downloaded:
+            if self.downloaded.check(source, dest):
+                self.log.debug('..CACHED %s -> %s', source, dest)
+                return
+            data = self.downloaded.cached(source)
+            s_modified = self.downloaded.modified.get(source, None)
 
-        try:
-            s_fd = urllib2.urlopen(source)
-        except urllib2.HTTPError, e:
-            if e.code >= 400:
-                self.result['missing'].append(source)
-                self.log.warning('HTTP %d on %s', e.code, source)
-            return None
+        if data is None:
+            try:
+                s_fd = urllib2.urlopen(source)
+            except urllib2.HTTPError, e:
+                if e.code >= 400:
+                    self.result['missing'].append(source)
+                    self.log.warning('HTTP %d on %s', e.code, source)
+                return None
 
-        data = s_fd.read()
-        s_modified = s_fd.headers.getheader('Last-Modified')
-        s_fd.close()
+            data = s_fd.read()
+            s_modified = s_fd.headers.getheader('Last-Modified')
+            if self.downloaded:
+                self.downloaded.modified[source] = s_modified
+            s_fd.close()
 
         if processor:
             data = processor(data)

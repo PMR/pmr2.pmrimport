@@ -248,6 +248,22 @@ class LiveBuilderTestCase(unittest.TestCase):
         self.assertEqual(len(result), len(URIS))
         for i in result.values():
             self.assert_(not i['exists'])
+        
+        # miscellenous download data check
+        # download file size check
+        s = None
+        t = None
+        for i in xrange(1, 8):
+            st = os.stat(os.path.join(self.builddir,
+                'beeler_reuter_1977/0%d/cellml_rendering.gif' % i))
+            fs = st.st_size
+            mt = st.st_mtime
+            if s is None:
+                s = fs
+                t = mt
+            self.assertEqual(s, fs)
+            self.assertEqual(t, mt)
+
         # XXX more assertions can be nice.
 
 
