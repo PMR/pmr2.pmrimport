@@ -27,7 +27,9 @@ URIS = [
     'http://www.cellml.org/models/bental_2006_version01_variant01',
     'http://www.cellml.org/models/bental_2006_version01',
 
+    'http://www.cellml.org/models/noble_varghese_kohl_noble_1998_version06_variant01',
     'http://www.cellml.org/models/noble_varghese_kohl_noble_1998_version07_variant02',
+    'http://www.cellml.org/models/tentusscher_noble_noble_panfilov_2004_version03',
 ]
 
 
@@ -182,7 +184,7 @@ class BaseCellMLBuilderTestCase(unittest.TestCase):
         self.assert_('<model ' in f)
 
     def test_download_cellml_cmeta_id(self):
-        uri = URIS[16]  # noble_varghese_kohl_noble_1998
+        uri = URIS[17]  # noble_varghese_kohl_noble_1998
         self.builder.uri = uri
         self.builder.prepare_path()
         self.builder.download_cellml()
@@ -216,8 +218,44 @@ class BaseCellMLBuilderTestCase(unittest.TestCase):
         self.assert_('<RDF:RDF' in result)
         self.assert_('/download' not in result)
         # the trailing cmeta id fragments remain
-        self.assert_(self.builder.result['cellml'] + '#' in result)
+        self.assert_('"' + self.builder.result['cellml'] + '#' in result)
         self.assert_('.xul/' not in result)
+        self.assert_('.cellml#environment_time' in result)
+
+    def test_download_session_wrong(self):
+        # tests session files that point to the _wrong_ model version
+        uri = URIS[18]  # tentusscher_noble_noble_panfilov_2004_version04
+        self.builder.uri = uri
+        self.builder.prepare_path()
+        self.builder.download_session()
+        f = open(self.builder.result['session'])
+        result = f.read()
+        f.close()
+        self.assert_(result.startswith('<?xml version='))
+        self.assert_('<RDF:RDF' in result)
+        self.assert_('/download' not in result)
+        # the trailing cmeta id fragments remain
+        self.assert_('"' + self.builder.result['cellml'] + '#' in result)
+        self.assert_('.xul/' not in result)
+        self.assert_('.cellml#environment_time' in result)
+
+    def test_download_session_wrong2(self):
+        # tests session files that point to the _wrong_ model version
+        uri = URIS[16]  # noble_varghese_kohl_noble_1998_version06_variant01
+        self.builder.uri = uri
+        self.builder.prepare_path()
+        self.builder.download_session()
+        f = open(self.builder.result['session'])
+        result = f.read()
+        f.close()
+        self.assert_(result.startswith('<?xml version='))
+        self.assert_('<RDF:RDF' in result)
+        self.assert_('/download' not in result)
+        self.assert_('file://' not in result)
+        # the trailing cmeta id fragments remain
+        self.assert_('"' + self.builder.result['cellml'] + '#' in result)
+        self.assert_('.xul/' not in result)
+        self.assert_('.cellml#environment_time' in result)
 
 
 class LiveBuilderTestCase(unittest.TestCase):

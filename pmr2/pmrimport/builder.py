@@ -165,7 +165,7 @@ class CellMLBuilder(object):
 
     # TODO
     # * search and destroy file:// URIs
-    # * make the session CellML file link correction more rigorous (1)
+    # * rdf node errors
 
     re_breakuri = re.compile(
         '^([a-zA-Z\-_]*(?:_[0-9]{4})?)_' \
@@ -175,6 +175,9 @@ class CellMLBuilder(object):
     )
 
     re_clean_name = re.compile('_version[0-9]{2}(.*)$')
+
+    re_clean_rdfres = re.compile('.*(?:http://www.cellml.org/models/|file://).*[^#]$')
+    re_clean_rdfres_id = re.compile('.*(?:http://www.cellml.org/models/|file://).*(#.*)$')
 
     def __init__(self, workdir, uri, downloaded=None):
         self.uri = uri
@@ -307,11 +310,6 @@ class CellMLBuilder(object):
         return self.uri + '/pmr_download'
 
     @property
-    def cellml_download_uri2(self):
-        # used for replacement
-        return self.uri + '/download'
-
-    @property
     def cellml_filename(self):
         return self.defaultname + '.cellml'
 
@@ -348,6 +346,8 @@ class CellMLBuilder(object):
         for i in imagedata:
             if 'fileref' in i.attrib:
                 i.attrib['fileref'] = self.get_baseuri(i.attrib['fileref'])
+        # XXX
+        # fix remaining 4suite rdf corruption errors and file://
 
     def download_images(self, images):
         """\
@@ -387,13 +387,6 @@ class CellMLBuilder(object):
         return cellml_path
 
     def process_session(self, data):
-        # XXX quick replace
-        # TODO (1) should probably use the name of this session file
-        # to generate the correct CellML filename that it should point
-        # to.  Find all the nodes, correct all references to filenames
-        # which should also correct file:// paths or session that points
-        # to explicit versions.
-        data = data.replace(self.cellml_download_uri2, self.result['cellml'])
 
         dom = lxml.etree.parse(StringIO(data))
         xulpath = dom.xpath('.//rdf:Description[@pcenv:externalurl]',
@@ -401,6 +394,32 @@ class CellMLBuilder(object):
         # get and update the XUL file
         for en in xulpath:
             self.download_xul(en)
+
+        rdfresource = '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}resource'
+        rdfabout = '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about'
+        nodes = dom.xpath('.//*[@rdf:resource]',
+            namespaces=CELLML_NSMAP)
+        nodes.extend(dom.xpath('.//*[@rdf:about]',
+            namespaces=CELLML_NSMAP))
+        nodes = list(set(nodes))
+        for node in nodes:
+            # XXX this is kind of a non-flexiable hack to accomodate
+            # both attribute types.
+            if rdfresource in node.attrib:
+                rdfattr = rdfresource
+            elif rdfabout in node.attrib:
+                rdfattr = rdfabout
+            else:
+                continue
+
+            s = node.attrib[rdfattr]
+
+            if self.re_clean_rdfres.match(s):
+                if self.re_clean_rdfres_id.match(s):
+                    node.attrib[rdfattr] = self.re_clean_rdfres_id.sub(
+                        self.result['cellml'] + '\\1', s)
+                else:
+                    node.attrib[rdfattr] = self.result['cellml']
         return dom
 
     def download_session(self):
