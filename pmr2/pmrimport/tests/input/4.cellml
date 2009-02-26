@@ -1,0 +1,172 @@
+<?xml version='1.0' encoding='utf-8'?>
+<model xmlns="http://www.cellml.org/cellml/1.0#" xmlns:cmeta="http://www.cellml.org/metadata/1.0#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqs="http://www.cellml.org/bqs/1.0#" xmlns:cellml="http://www.cellml.org/cellml/1.0#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" name="butera_rinzel_smith_1999_version01" cmeta:id="butera_rinzel_smith_1999_version01">
+
+<rdf:RDF>
+    <rdf:Seq rdf:ID="http://4suite.org/rdf/anonymous/f7a413ca-e561-4d50-b5b8-2df2a585c2b0">
+      <rdf:li resource="http://4suite.org/rdf/anonymous/394263b5-c652-4f53-8636-eb84cecc2458"/>
+      <rdf:li resource="http://4suite.org/rdf/anonymous/d5f46795-de47-4352-a351-1f5750bb0003"/>
+      <rdf:li resource="http://4suite.org/rdf/anonymous/90029e84-c922-40c5-bcf2-90fd82f66f37"/>
+    </rdf:Seq>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/15bbd9c7-8c70-4dbc-b9f9-a53b9cdf5233">
+      <vCard:Orgname>The University of Auckland</vCard:Orgname>
+      <vCard:Orgunit>The Bioengineering Institute</vCard:Orgunit>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/95fe2c41-d201-4f16-90a8-135918df1593">
+      <dcterms:W3CDTF>2002-05-09</dcterms:W3CDTF>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/b48ca180-f74b-402d-bd52-694814dc2279">
+      <dcterms:W3CDTF>2005-04-20</dcterms:W3CDTF>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/578cd774-5f5d-4fc3-a95d-7e159a096db9">
+      <dcterms:modified rdf:resource="http://4suite.org/rdf/anonymous/4568d027-e411-4065-822b-21b56cc51897"/>
+      <rdf:value>
+          Added publication date information.
+        </rdf:value>
+      <cmeta:modifier rdf:resource="http://4suite.org/rdf/anonymous/3cce81f8-8e6f-4dcf-99b6-fd0c725ceab7"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/3cce81f8-8e6f-4dcf-99b6-fd0c725ceab7">
+      <vCard:N rdf:resource="http://4suite.org/rdf/anonymous/a357e230-4a4a-4a3d-95ab-a7bb995e51a2"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.cellml.org/models/butera_rinzel_smith_1999_version01#butera_rinzel_smith_1999_version01">
+      <dc:title>
+         Butera et al's first 1999 mathematical model of respiratory rhythm 
+         generation in the pre-Botzinger complex in bursting pacemaker neurons.
+      </dc:title>
+      <cmeta:bio_entity>pacemaker neuron</cmeta:bio_entity>
+      <cmeta:comment>http://4suite.org/rdf/anonymous/1e70c7fb-dfc7-4b5e-a971-6f06d6a1e7be</cmeta:comment>
+      <bqs:reference>http://4suite.org/rdf/anonymous/ea99c96a-d446-41b4-be01-4f5c06ad6b6a</bqs:reference>
+      <bqs:reference>http://4suite.org/rdf/anonymous/f5f5cdf7-d366-4040-a6a3-4a5bf5fe3a99</bqs:reference>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/ea99c96a-d446-41b4-be01-4f5c06ad6b6a">
+      <bqs:Pubmed_id>10400966</bqs:Pubmed_id>
+      <bqs:JournalArticle rdf:resource="http://4suite.org/rdf/anonymous/cdef9fd9-3619-4861-8a70-1e2a2e1ce0d9"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/da00117b-2ff5-4766-aaed-53dbe7a242ef">
+      <vCard:ORG rdf:resource="http://4suite.org/rdf/anonymous/15bbd9c7-8c70-4dbc-b9f9-a53b9cdf5233"/>
+      <vCard:EMAIL rdf:resource="http://4suite.org/rdf/anonymous/9958a102-904d-49f7-ae3b-7a5132bfd16c"/>
+      <vCard:N rdf:resource="http://4suite.org/rdf/anonymous/12a5f78f-dd88-42ec-a8af-02e09587b438"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/2ba081e7-4b2c-440a-a3a3-16e3d61ce5d1">
+      <vCard:N rdf:resource="http://4suite.org/rdf/anonymous/882a86c6-f385-49f9-baac-dd381486a301"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/7fe065c8-f59e-4195-a3e8-561e5bedb167">
+      <vCard:N rdf:resource="http://4suite.org/rdf/anonymous/73063f81-eaf0-4e22-bb41-28823a3946f9"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/9958a102-904d-49f7-ae3b-7a5132bfd16c">
+      <rdf:type rdf:resource="http://imc.org/vCard/3.0#internet"/>
+      <rdf:value>c.lloyd@auckland.ac.nz</rdf:value>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/c4f3c31c-4878-472a-b554-a68aa1a439dc">
+      <vCard:FN>Catherine Lloyd</vCard:FN>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/1e70c7fb-dfc7-4b5e-a971-6f06d6a1e7be">
+      <dc:creator rdf:resource="http://4suite.org/rdf/anonymous/c4f3c31c-4878-472a-b554-a68aa1a439dc"/>
+      <rdf:value>
+          This is the CellML description of Butera et al's first 1999 
+          mathematical model of respiratory rhythm generation in the 
+          pre-Botzinger complex in bursting pacemaker neurons.
+        </rdf:value>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/394263b5-c652-4f53-8636-eb84cecc2458">
+      <rdf:type rdf:resource="http://www.cellml.org/bqs/1.0#Person"/>
+      <vCard:N rdf:resource="http://4suite.org/rdf/anonymous/90045915-0fef-4911-8140-35b19f3c6111"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/461e60b1-7713-42a6-806e-971b0088a97a">
+      <dcterms:W3CDTF>1999-07</dcterms:W3CDTF>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/0e7ec12a-a6c0-4b09-9d75-77e858889dea">
+      <dcterms:modified rdf:resource="http://4suite.org/rdf/anonymous/68dcbed4-b31e-4069-b2f5-eea01129d31d"/>
+      <rdf:value>
+          Added more metadata.
+        </rdf:value>
+      <cmeta:modifier rdf:resource="http://4suite.org/rdf/anonymous/7fe065c8-f59e-4195-a3e8-561e5bedb167"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/12a5f78f-dd88-42ec-a8af-02e09587b438">
+      <vCard:Given>Catherine</vCard:Given>
+      <vCard:Family>Lloyd</vCard:Family>
+      <vCard:Other>May</vCard:Other>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.cellml.org/models/butera_rinzel_smith_1999_version01">
+      <dc:publisher>
+        The University of Auckland, Bioengineering Institute
+      </dc:publisher>
+      <cmeta:modification>http://4suite.org/rdf/anonymous/0e7ec12a-a6c0-4b09-9d75-77e858889dea</cmeta:modification>
+      <cmeta:modification>http://4suite.org/rdf/anonymous/578cd774-5f5d-4fc3-a95d-7e159a096db9</cmeta:modification>
+      <cmeta:modification>http://4suite.org/rdf/anonymous/e73d9d13-3c1c-43a2-a142-2a9a9629802f</cmeta:modification>
+      <dcterms:created>http://4suite.org/rdf/anonymous/95fe2c41-d201-4f16-90a8-135918df1593</dcterms:created>
+      <dc:creator>http://4suite.org/rdf/anonymous/da00117b-2ff5-4766-aaed-53dbe7a242ef</dc:creator>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/882a86c6-f385-49f9-baac-dd381486a301">
+      <vCard:Given>Peter</vCard:Given>
+      <vCard:Family>Villiger</vCard:Family>
+      <vCard:Other>J</vCard:Other>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/90029e84-c922-40c5-bcf2-90fd82f66f37">
+      <rdf:type rdf:resource="http://www.cellml.org/bqs/1.0#Person"/>
+      <vCard:N rdf:resource="http://4suite.org/rdf/anonymous/9c6f6749-28ca-4a09-96da-b5b7d09671f5"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/4568d027-e411-4065-822b-21b56cc51897">
+      <dcterms:W3CDTF>2003-04-09</dcterms:W3CDTF>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/f5f5cdf7-d366-4040-a6a3-4a5bf5fe3a99">
+      <dc:subject rdf:resource="http://4suite.org/rdf/anonymous/b9ec4f7a-6176-4a1d-a932-9b5885b48afe"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/a357e230-4a4a-4a3d-95ab-a7bb995e51a2">
+      <vCard:Given>Autumn</vCard:Given>
+      <vCard:Family>Cuellar</vCard:Family>
+      <vCard:Other>A</vCard:Other>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/9c6f6749-28ca-4a09-96da-b5b7d09671f5">
+      <vCard:Given>Jeffrey</vCard:Given>
+      <vCard:Family>Smith</vCard:Family>
+      <vCard:Other>C</vCard:Other>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/44843408-f019-4caf-b365-63fa03b4d733">
+      <dc:title>Journal of Neurophysiology</dc:title>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/73063f81-eaf0-4e22-bb41-28823a3946f9">
+      <vCard:Given>Catherine</vCard:Given>
+      <vCard:Family>Lloyd</vCard:Family>
+      <vCard:Other>May</vCard:Other>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/90045915-0fef-4911-8140-35b19f3c6111">
+      <vCard:Given>Robert</vCard:Given>
+      <vCard:Family>Butera</vCard:Family>
+      <vCard:Other>J</vCard:Other>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/cdef9fd9-3619-4861-8a70-1e2a2e1ce0d9">
+      <dc:creator rdf:resource="http://4suite.org/rdf/anonymous/f7a413ca-e561-4d50-b5b8-2df2a585c2b0"/>
+      <dc:title>
+            Models of Respiratory Rhythm Generation in the Pre-Botzinger 
+            Complex. I. Bursting Pacemaker Neurons 
+          </dc:title>
+      <bqs:volume>81</bqs:volume>
+      <bqs:first_page>382</bqs:first_page>
+      <bqs:Journal rdf:resource="http://4suite.org/rdf/anonymous/44843408-f019-4caf-b365-63fa03b4d733"/>
+      <dcterms:issued rdf:resource="http://4suite.org/rdf/anonymous/461e60b1-7713-42a6-806e-971b0088a97a"/>
+      <bqs:last_page>397</bqs:last_page>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/68dcbed4-b31e-4069-b2f5-eea01129d31d">
+      <dcterms:W3CDTF>2002-07-18</dcterms:W3CDTF>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/b9ec4f7a-6176-4a1d-a932-9b5885b48afe">
+      <bqs:subject_type>keyword</bqs:subject_type>
+      <rdf:value>calcium dymanics</rdf:value>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/d9f742c4-5b72-4496-bbea-e0791a58c001">
+      <vCard:Given>John</vCard:Given>
+      <vCard:Family>Rinzel</vCard:Family>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/d5f46795-de47-4352-a351-1f5750bb0003">
+      <rdf:type rdf:resource="http://www.cellml.org/bqs/1.0#Person"/>
+      <vCard:N rdf:resource="http://4suite.org/rdf/anonymous/d9f742c4-5b72-4496-bbea-e0791a58c001"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://4suite.org/rdf/anonymous/e73d9d13-3c1c-43a2-a142-2a9a9629802f">
+      <dcterms:modified rdf:resource="http://4suite.org/rdf/anonymous/b48ca180-f74b-402d-bd52-694814dc2279"/>
+      <rdf:value>
+          Made MathML id's unique
+        </rdf:value>
+      <cmeta:modifier rdf:resource="http://4suite.org/rdf/anonymous/2ba081e7-4b2c-440a-a3a3-16e3d61ce5d1"/>
+    </rdf:Description>
+  </rdf:RDF>
+</model>

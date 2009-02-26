@@ -1,0 +1,188 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!--
+This CellML file was generated on 31/12/2007 at 1:46:57 at p.m. using:
+
+COR (0.9.31.833)
+Copyright 2002-2007 Dr Alan Garny
+http://COR.physiol.ox.ac.uk/ - COR@physiol.ox.ac.uk
+
+CellML 1.0 was used to generate this cellular model
+http://www.CellML.org/
+--><model xmlns="http://www.cellml.org/cellml/1.0#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:rdf="http://www.w3.org/1999/0P/PP-rdf-syntax-ns#" xmlns:cmeta="http://www.cellml.org/metadata/1.0#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:NS5="http://www.cellml.org/metadata/simulation/1.0#" xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqs="http://www.cellml.org/bqs/1.0#" xmlns:NS7="http://www.cellml.org/metadata/1.0#" xmlns:NS1="http://www.cellml.org/bqs/1.0#" xmlns:cellml="http://www.cellml.org/cellml/1.0#" xmlns:NS2="http://purl.org/dc/elements/1.1/" xmlns:NS3="http://purl.org/dc/terms/" xmlns:NS4="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:NS6="http://imc.org/vCard/3.0#" xmlns:ns7="http://www.cellml.org/metadata/simulation/1.0#" cmeta:id="aon_cortassa_2002_version01" name="aon_cortassa_2002_version01">
+
+
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Seq rdf:ID="#####file:///people/jlaw060/Desktop/aon2.cellmlrdf:#70b9bc35-a7eb-44e0-b390-867748ed32b4">
+    <rdf:li rdf:resource="rdf:#$LGkot3"/>
+    <rdf:li rdf:resource="rdf:#$MGkot3"/>
+  </rdf:Seq>
+  <rdf:Seq rdf:about="rdf:#52ba8e62-d5aa-465e-82cc-9cb5408b9e37">
+    <rdf:li rdf:resource="rdf:#638c5ec6-ccf9-4144-af78-07a773dffb0d"/>
+    <rdf:li rdf:resource="rdf:#64d8be00-80f8-4c6d-990f-5f12928d90c4"/>
+  </rdf:Seq>
+  <rdf:Description rdf:about="rdf:#64cab820-9570-4c12-bbf0-20b0bb41066f">
+    <vCard:ORG rdf:resource="rdf:#82e1a64b-4190-405a-9c02-6e4e07643e67"/>
+    <vCard:EMAIL rdf:resource="rdf:#c5b8bfab-f37c-4122-b962-b9ee3ea747df"/>
+    <vCard:N rdf:resource="rdf:#67df7df4-91b2-412a-9a27-cd1164321167"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="">
+    <dc:publisher>The University of Auckland, Bioengineering Institute</dc:publisher>
+    <cmeta:comment rdf:resource="rdf:#578939b6-737c-4928-b7c5-75c4514a3864"/>
+    <dcterms:created rdf:resource="rdf:#233cd907-5ccf-46cd-969e-8a642fb4a465"/>
+    <dc:creator rdf:resource="rdf:#64cab820-9570-4c12-bbf0-20b0bb41066f"/>
+    <cmeta:modification rdf:resource="rdf:#16a4c09d-02af-4040-8c5f-423d7b5d49d7"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#b9794819-dd10-4c10-972b-e7a51a6fb178">
+    <vCard:Given>Catherine</vCard:Given>
+    <vCard:Family>Lloyd</vCard:Family>
+    <vCard:Other>May</vCard:Other>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#820e0f10-1615-42cd-bd27-030084252ddc">
+    <bqs:Pubmed_id>12050011</bqs:Pubmed_id>
+    <bqs:JournalArticle rdf:resource="rdf:#d4613557-292a-4d51-98a1-e5f63975df45"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#88701e5c-df00-4714-8923-801fe3da581d">
+    <vCard:Given>Catherine</vCard:Given>
+    <vCard:Family>Lloyd</vCard:Family>
+    <vCard:Other>May</vCard:Other>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#77a08214-eb8a-40b3-bf05-23a9e4cd7bbf">
+    <vCard:Given>Miguel</vCard:Given>
+    <vCard:Family>Aon</vCard:Family>
+    <vCard:Other>A</vCard:Other>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#80a0ac4d-0045-407f-9929-afbf5bbd40bb">
+    <dcterms:W3CDTF>2007-12-31T13:57:28+13:00</dcterms:W3CDTF>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#233cd907-5ccf-46cd-969e-8a642fb4a465">
+    <dcterms:W3CDTF>2003-08-14T00:00:00+00:00</dcterms:W3CDTF>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#c279454f-a883-4bd6-a118-b53a42327a21">
+    <vCard:Given>M</vCard:Given>
+    <vCard:Family>Aon</vCard:Family>
+    <vCard:Other>A</vCard:Other>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#83f6d549-fe40-4e45-8da4-9faa85562017">
+    <dcterms:W3CDTF>2002-06-19</dcterms:W3CDTF>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#$NGkot3">
+    <ns7:boundIntervals rdf:resource="rdf:#$OGkot3"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#16a4c09d-02af-4040-8c5f-423d7b5d49d7">
+    <dcterms:modified rdf:resource="rdf:#80a0ac4d-0045-407f-9929-afbf5bbd40bb"/>
+    <rdf:value>Corrected a couple of equations and fixed some units.  </rdf:value>
+    <cmeta:modifier rdf:resource="rdf:#a873877c-087c-4e5c-8e68-c98682efc59e"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#0f9a050f-078e-494c-a53e-11df1bc012df">
+    <vCard:FN>Catherine Lloyd</vCard:FN>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#85564348-0ef3-4775-a85d-bd790336aa12">
+    <rdf:type rdf:resource="http://www.cellml.org/bqs/1.0#Person"/>
+    <vCard:N rdf:resource="rdf:#25ab1aad-345d-4050-b721-d459c30a7d7e"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="#aon_cortassa_2002_version01">
+    <ns7:simulation rdf:resource="rdf:#$NGkot3"/>
+    <dc:title>Aon and Cortassa's 2002 mathematical model of a metabolic network.</dc:title>
+    <cmeta:comment rdf:resource="rdf:#427ad407-cbf5-4a5e-ae8b-60e19af23056"/>
+    <bqs:reference rdf:resource="rdf:#81e78d33-0854-4a5d-ba8f-c66285c2e1ad"/>
+    <bqs:reference rdf:resource="rdf:#820e0f10-1615-42cd-bd27-030084252ddc"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#427ad407-cbf5-4a5e-ae8b-60e19af23056">
+    <dc:creator rdf:resource="rdf:#0f9a050f-078e-494c-a53e-11df1bc012df"/>
+    <rdf:value>This is the CellML description of Aon and Cortassa's 2002 mathematical \          model of a metabolic network.</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#64d8be00-80f8-4c6d-990f-5f12928d90c4">
+    <rdf:type rdf:resource="http://www.cellml.org/bqs/1.0#Person"/>
+    <vCard:N rdf:resource="rdf:#f7f76303-b117-4e08-aa0d-af71fde0b32a"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#25ab1aad-345d-4050-b721-d459c30a7d7e">
+    <vCard:Given>Sonia</vCard:Given>
+    <vCard:Family>Cortassa</vCard:Family>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#a873877c-087c-4e5c-8e68-c98682efc59e">
+    <vCard:N rdf:resource="rdf:#88701e5c-df00-4714-8923-801fe3da581d"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#f9474bfb-e0c0-403c-b226-70ce7115cf65">
+    <rdf:type rdf:resource="http://imc.org/vCard/3.0#internet"/>
+    <rdf:value>c.lloyd@auckland.ac.nz</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.cellml.org/models/aon_cortassa_2002_version01">
+    <dc:publisher>The University of Auckland, Bioengineering Institute</dc:publisher>
+    <dcterms:created rdf:resource="rdf:#bc9ca9b0-8cbf-41ab-aff3-40ed0f4d19e3"/>
+    <dc:creator rdf:resource="rdf:#0180cc82-88c7-47f4-9216-7ef9516d13bf"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#277493fb-37d1-474c-a9e9-3325070e4364">
+    <bqs:subject_type>keyword</bqs:subject_type>
+    <rdf:value>metabolism</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#5d8ed788-3ad6-4d2f-ba9e-16930a9899ec">
+    <vCard:FN>Catherine Lloyd</vCard:FN>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#bc9ca9b0-8cbf-41ab-aff3-40ed0f4d19e3">
+    <dcterms:W3CDTF>2003-08-14</dcterms:W3CDTF>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#$OGkot3">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:resource="rdf:#$PGkot3"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#82e1a64b-4190-405a-9c02-6e4e07643e67">
+    <vCard:Orgname>The University of Auckland</vCard:Orgname>
+    <vCard:Orgunit>The Bioengineering Institute</vCard:Orgunit>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#d4613557-292a-4d51-98a1-e5f63975df45">
+    <dc:creator rdf:resource="rdf:#52ba8e62-d5aa-465e-82cc-9cb5408b9e37"/>
+    <dc:title>Coherent and robust modulation of a metabolic network by cytoskeletal organization and dynamics</dc:title>
+    <bqs:volume>97</bqs:volume>
+    <bqs:first_page>213</bqs:first_page>
+    <bqs:Journal rdf:resource="rdf:#7c70afda-948f-4530-9876-2187e649c278"/>
+    <dcterms:issued rdf:resource="rdf:#83f6d549-fe40-4e45-8da4-9faa85562017"/>
+    <bqs:last_page>231</bqs:last_page>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#20179794-a228-4157-bd2c-bae8f87cc6c6">
+    <rdf:type rdf:resource="http://www.cellml.org/bqs/1.0#Person"/>
+    <vCard:N rdf:resource="rdf:#77a08214-eb8a-40b3-bf05-23a9e4cd7bbf"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#578939b6-737c-4928-b7c5-75c4514a3864">
+    <dc:creator rdf:resource="rdf:#5d8ed788-3ad6-4d2f-ba9e-16930a9899ec"/>
+    <rdf:value>This CellML model runs in both PCENv and COR.  The units have been checked and are consistent and correct.  Unfortunately this version of the CellML model does not recreate the published results of the original model.  We are unsure why as the full set of equations and parameters are included and the simulation tools produce no error messages.</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#67df7df4-91b2-412a-9a27-cd1164321167">
+    <vCard:Given>Catherine</vCard:Given>
+    <vCard:Family>Lloyd</vCard:Family>
+    <vCard:Other>May</vCard:Other>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#c5b8bfab-f37c-4122-b962-b9ee3ea747df">
+    <rdf:type rdf:resource="http://imc.org/vCard/3.0#internet"/>
+    <rdf:value>c.lloyd@auckland.ac.nz</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#3ab16370-38df-4ff4-abec-c47cb21e9453">
+    <vCard:Orgname>The University of Auckland</vCard:Orgname>
+    <vCard:Orgunit>The Bioengineering Institute</vCard:Orgunit>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#f7f76303-b117-4e08-aa0d-af71fde0b32a">
+    <vCard:Given>S</vCard:Given>
+    <vCard:Family>Cortassa</vCard:Family>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#7c70afda-948f-4530-9876-2187e649c278">
+    <dc:title>Biophysical Chemistry</dc:title>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#$PGkot3">
+    <ns7:endingValue>0.01</ns7:endingValue>
+    <ns7:nonstandard-pointDensity>100000</ns7:nonstandard-pointDensity>
+    <ns7:maximumStepSize>0.001</ns7:maximumStepSize>
+    <ns7:nonstandard-algorithm>rkimp4</ns7:nonstandard-algorithm>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#638c5ec6-ccf9-4144-af78-07a773dffb0d">
+    <rdf:type rdf:resource="http://www.cellml.org/bqs/1.0#Person"/>
+    <vCard:N rdf:resource="rdf:#c279454f-a883-4bd6-a118-b53a42327a21"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#0180cc82-88c7-47f4-9216-7ef9516d13bf">
+    <vCard:ORG rdf:resource="rdf:#3ab16370-38df-4ff4-abec-c47cb21e9453"/>
+    <vCard:EMAIL rdf:resource="rdf:#f9474bfb-e0c0-403c-b226-70ce7115cf65"/>
+    <vCard:N rdf:resource="rdf:#b9794819-dd10-4c10-972b-e7a51a6fb178"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#81e78d33-0854-4a5d-ba8f-c66285c2e1ad">
+    <dc:subject rdf:resource="rdf:#277493fb-37d1-474c-a9e9-3325070e4364"/>
+  </rdf:Description>
+</rdf:RDF>
+</model>

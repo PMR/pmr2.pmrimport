@@ -1,0 +1,137 @@
+<?xml version='1.0' encoding='utf-8'?>
+<model xmlns="http://www.cellml.org/cellml/1.0#" xmlns:cmeta="http://www.cellml.org/metadata/1.0#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/0P/PP-rdf-syntax-ns#" xmlns:bqs="http://www.cellml.org/bqs/1.0#" xmlns:cellml="http://www.cellml.org/cellml/1.0#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:ns7="http://www.cellml.org/metadata/simulation/1.0#" cmeta:id="sarkar_lauffenburger_2003_version02" name="sarkar_lauffenburger_2003_version02">
+
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Seq rdf:ID="###file:///people/jlaw060/Desktop/sarkar_lauffenburger_2003_version01_14:56:21%202007-04-30_15:02:00%202007-04-30.cellml#rdf:#95e791e3-7209-40c6-9a20-846f718f30fb"/>
+  <rdf:Seq rdf:about="rdf:#8e61cbed-aa6a-4b9b-8d43-dc8d0b6e5310">
+    <rdf:li rdf:resource="rdf:#581e8405-6665-449a-8be0-5510378d752c"/>
+    <rdf:li rdf:resource="rdf:#7f0b53bf-7cb8-41ef-9fae-a7351d755b97"/>
+  </rdf:Seq>
+  <rdf:Description rdf:about="rdf:#5b666065-ebef-413b-952f-c48467b29874">
+    <vCard:Given>Casim</vCard:Given>
+    <vCard:Family>Sarkar</vCard:Family>
+    <vCard:Other>A</vCard:Other>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#57c1da4f-0ae1-4926-b732-4dce978b78a9">
+    <vCard:Given>Douglas</vCard:Given>
+    <vCard:Family>Lauffenburger</vCard:Family>
+    <vCard:Other>A</vCard:Other>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#$Fsu1C3">
+    <ns7:endingValue>10</ns7:endingValue>
+    <ns7:nonstandard-pointDensity>100000</ns7:nonstandard-pointDensity>
+    <ns7:maximumStepSize>0.001</ns7:maximumStepSize>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#7f0b53bf-7cb8-41ef-9fae-a7351d755b97">
+    <rdf:type rdf:resource="http://www.cellml.org/bqs/1.0#Person"/>
+    <vCard:N rdf:resource="rdf:#57c1da4f-0ae1-4926-b732-4dce978b78a9"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#c5d8b823-663a-4966-89a9-0901adfd899c">
+    <vCard:Given>Casim</vCard:Given>
+    <vCard:Family>Sarkar</vCard:Family>
+    <vCard:Other>A</vCard:Other>
+  </rdf:Description>
+  <rdf:Description rdf:about="">
+    <dc:publisher>The University of Auckland, Bioengineering Institute</dc:publisher>
+    <cmeta:comment rdf:resource="rdf:#aecd89df-1e5e-4f16-b9a4-a534995306b9"/>
+    <dcterms:created rdf:resource="rdf:#4959a09b-3a49-4c35-a173-15a730e7549d"/>
+    <dc:creator rdf:resource="rdf:#306e00cd-01d4-40b5-ab8a-bee63d5d8df3"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#a4845af6-5ab5-4622-9187-f099763fceaf">
+    <vCard:Given>James</vCard:Given>
+    <vCard:Family>Lawson</vCard:Family>
+    <vCard:Other/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#aecd89df-1e5e-4f16-b9a4-a534995306b9">
+    <dc:creator rdf:resource="rdf:#45914355-2425-4c4a-a1c0-de96cc4ecb66"/>
+    <rdf:value/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#be6a5995-6b82-45ed-b931-cec3d155e7cb">
+    <dc:subject rdf:resource="rdf:#bf321619-78a2-4dbe-a4be-6a5b0f7c92dc"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#19e22060-2449-47df-afd0-680dfb77bc51">
+    <bqs:Pubmed_id>12488547</bqs:Pubmed_id>
+    <bqs:JournalArticle rdf:resource="rdf:#268e97bd-5ce9-457a-b4f7-9dc94d0edea9"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#4c4b93d3-ccbd-482a-b23c-5aae74a49f86">
+    <vCard:Orgname>University of Auckland</vCard:Orgname>
+    <vCard:Orgunit>Bioengineering Institute</vCard:Orgunit>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#96292809-8fcf-4e8b-afca-7dc31544123e">
+    <rdf:type rdf:resource="http://www.cellml.org/bqs/1.0#Person"/>
+    <vCard:N rdf:resource="rdf:#c5d8b823-663a-4966-89a9-0901adfd899c"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#d362ebc9-37a9-4387-ad6e-a3da1a656aed">
+    <vCard:Given>Douglas</vCard:Given>
+    <vCard:Family>Lauffenburger</vCard:Family>
+    <vCard:Other>A</vCard:Other>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#bf321619-78a2-4dbe-a4be-6a5b0f7c92dc">
+    <bqs:subject_type>keyword</bqs:subject_type>
+    <rdf:value rdf:resource="rdf:#1c9e4de6-2f00-48bf-ad34-3c030b15542a"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#e78a32d8-d7a9-46f8-b495-3da148612106">
+    <rdf:type rdf:resource="http://www.cellml.org/bqs/1.0#Person"/>
+    <vCard:N rdf:resource="rdf:#d362ebc9-37a9-4387-ad6e-a3da1a656aed"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="file:///people/jlaw060/Desktop/sarkar_lauffenburger_2003_version01_14:56:21%202007-04-30_15:02:00%202007-04-30.cellml#sarkar_lauffenburger_2003_version01">
+    <ns7:simulation rdf:resource="rdf:#$Dsu1C3"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#e8da0662-9ccf-4ec7-8231-3588e638e673">
+    <dc:title>Molecular Pharmacology</dc:title>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#268e97bd-5ce9-457a-b4f7-9dc94d0edea9">
+    <dc:creator rdf:resource="rdf:#8e61cbed-aa6a-4b9b-8d43-dc8d0b6e5310"/>
+    <dc:title>Cell-Level Pharmacokinetic Model of Granulocyte Colony-Stimulating Factor: Implications for Ligand Lifetime and Potency in Vivo</dc:title>
+    <bqs:volume>63</bqs:volume>
+    <bqs:first_page>147</bqs:first_page>
+    <bqs:Journal rdf:resource="rdf:#e8da0662-9ccf-4ec7-8231-3588e638e673"/>
+    <dcterms:issued rdf:resource="rdf:#2de74d52-0b7e-45ca-ab86-910b12b64d2a"/>
+    <bqs:last_page>158</bqs:last_page>
+  </rdf:Description>
+  <rdf:Description rdf:about="#sarkar_lauffenburger_2003_version02">
+    <dc:title>Sarkar and Lauffenburger's 2003 computational model of GCSF endocytic 
+        trafficking dynamics.</dc:title>
+    <cmeta:bioentity>neutrophil</cmeta:bioentity>
+    <cmeta:comment rdf:resource="rdf:#929c0a9f-efa5-4a3d-a1d0-103741913fe0"/>
+    <bqs:reference rdf:resource="rdf:#19e22060-2449-47df-afd0-680dfb77bc51"/>
+    <bqs:reference rdf:resource="rdf:#be6a5995-6b82-45ed-b931-cec3d155e7cb"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#$Esu1C3">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:resource="rdf:#$Fsu1C3"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#45914355-2425-4c4a-a1c0-de96cc4ecb66">
+    <vCard:FN/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#0ca32a8d-a836-4845-8300-cd15bdff361d">
+    <vCard:FN>Catherine Lloyd</vCard:FN>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#4959a09b-3a49-4c35-a173-15a730e7549d">
+    <dcterms:W3CDTF>2007-04-30T00:00:00+00:00</dcterms:W3CDTF>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#306e00cd-01d4-40b5-ab8a-bee63d5d8df3">
+    <vCard:ORG rdf:resource="rdf:#4c4b93d3-ccbd-482a-b23c-5aae74a49f86"/>
+    <vCard:EMAIL rdf:resource="rdf:#d3cdcb81-9c25-4d07-b92c-bf121a241950"/>
+    <vCard:N rdf:resource="rdf:#a4845af6-5ab5-4622-9187-f099763fceaf"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#d3cdcb81-9c25-4d07-b92c-bf121a241950">
+    <rdf:type rdf:resource="http://imc.org/vCard/3.0#internet"/>
+    <rdf:value>j.lawson@auckland.ac.nz</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#581e8405-6665-449a-8be0-5510378d752c">
+    <rdf:type rdf:resource="http://www.cellml.org/bqs/1.0#Person"/>
+    <vCard:N rdf:resource="rdf:#5b666065-ebef-413b-952f-c48467b29874"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#$Dsu1C3">
+    <ns7:boundIntervals rdf:resource="rdf:#$Esu1C3"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#929c0a9f-efa5-4a3d-a1d0-103741913fe0">
+    <dc:creator rdf:resource="rdf:#0ca32a8d-a836-4845-8300-cd15bdff361d"/>
+    <rdf:value>This is the CellML description of Sarkar and Lauffenburger's 2003 computational model of GCSF endocytic trafficking dynamics.</rdf:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="rdf:#2de74d52-0b7e-45ca-ab86-910b12b64d2a">
+    <dcterms:W3CDTF>2003-01-01</dcterms:W3CDTF>
+  </rdf:Description>
+</rdf:RDF>
+</model>
