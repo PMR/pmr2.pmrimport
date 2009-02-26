@@ -5,9 +5,10 @@ import shutil
 import tempfile
 from cStringIO import StringIO
 
-from pmr2.pmrimport.builder import *
-
+from lxml import etree
 from mercurial import hg, ui
+
+from pmr2.pmrimport.builder import *
 
 URIS = [
     'http://www.cellml.org/models/beeler_reuter_1977_version01',
@@ -32,6 +33,8 @@ URIS = [
     'http://www.cellml.org/models/tentusscher_noble_noble_panfilov_2004_version03',
 ]
 
+def openinputfile(*a):
+    return open(os.path.join(os.path.dirname(__file__), 'input', *a))
 
 # XXX bad practice in here
 # many of these tests rely on the PMR being online
@@ -139,6 +142,67 @@ class BaseCellMLBuilderTestCase(unittest.TestCase):
         self.assertEqual(p, os.path.join(
             self.workdir, self.builder.citation, self.builder.version, 
             'a', 'b'))
+
+    def test_failsuite(self):
+        for i in xrange(6):
+            j = i + 1
+            check = '%d.cellml' % (j)
+            o = openinputfile(check)
+            data = o.read()
+            o.close()
+            output = self.builder.fix_failsuite(data)
+            badstr = [
+                # we do not want to be associated with 4suite.org in 
+                # any shape or form, and especially do not want this 
+                # domain name to pollute RDF we generate.
+                r'4suite\.org',
+                r'rdf:ID',
+                r'file://',
+                r'##',
+                r'rdf:about="#[0-9]{8}',
+                r'rdf:resource="#[0-9]{8}',
+                r'rdf:about="http://www.cellml.org/models',
+                r'cmeta:modification>[^<]*</cmeta:modification',
+            ]
+            for s in badstr:
+                self.assert_(not re.search(s, output),
+                    '%s found in %s' % (s, check))
+
+            # finally we are cleansed of the filth, but we need to know
+            # we are clean the correct way.
+
+            expected = (
+                ([1], 'rdf:about="#aon_cortassa_2002_version01"',),
+                ([1], 'rdf:about="rdf:#70b9bc35-a7eb-44e0-b390-867748ed32b4"',),
+                ([2], 'rdf:resource="rdf:#7369d2a7-512a-4e5c-b6f0-da233f7fa516"',),
+                ([2], 'rdf:about="rdf:#7369d2a7-512a-4e5c-b6f0-da233f7fa516"',),
+                ([3], 'rdf:about="#sarkar_lauffenburger_2003_version01"',),
+                ([4], '<cmeta:comment rdf:resource="rdf:#1e70c7fb-dfc7-4b5e-a971-6f06d6a1e7be"/>'),
+                ([4], '<rdf:Description rdf:about="#butera_rinzel_smith_1999_version01">'),
+                ([5], '<rdf:Description rdf:about="#wolf_sohn_heinrich_kuriyama_2001_version01">'),
+                ([5], '<rdf:Description rdf:about="#aps">'),
+                ([5], '<rdf:Description rdf:about="#N2">'),
+                ([6], '<rdf:Description rdf:about="#ECl_i">'),
+                ([6], '<rdf:Description rdf:about="#D">'),
+                # all files in CellML should have a node about themselves
+                ([1, 2, 3, 4, 5, 6], 'rdf:about=""'),
+            )
+            for ex in expected:
+
+                if j in ex[0]:
+                    self.assert_(ex[1] in output, 
+                        '%s not found in %s' % (ex[1], check))
+
+            # will it parse?
+            # XXX need to check the RDF output, too.
+            try:
+                etree.parse(StringIO(output))
+            except:
+                import pdb;pdb.set_trace()
+                self.assert_(False, 'Failed to parse %s' % check)
+
+            # finally.
+
 
     def test_download(self):
         uri = 'http://www.example.com/notfound'
@@ -291,9 +355,9 @@ class LiveBuilderTestCase(unittest.TestCase):
         # download file size check
         s = None
         t = None
-        for i in xrange(1, 8):
+        for i in xrange(8):
             st = os.stat(os.path.join(self.builddir,
-                'beeler_reuter_1977/0%d/cellml_rendering.gif' % i))
+                'beeler_reuter_1977/0%d/cellml_rendering.gif' % i + 1))
             fs = st.st_size
             mt = st.st_mtime
             if s is None:

@@ -327,6 +327,76 @@ class CellMLBuilder(object):
         self.download(self.cellml_download_uri, dest, self.process_cellml)
         self.log.debug('.w cellml: %s', dest)
 
+    failsuite = (
+        # let's hear it for 4Suite's non-standard, non-anonymous 
+        # anonymous id that tries to be an advertisement
+        # should be 'rdf:about="rdf:#' because this is a PMR converter
+        # and I had to work with (more like work around) 4Suite on PMR
+        # so hacks like these were introduced.  Normalize everything
+        # first before we convert everything to proper RDF blind nodes.
+        ('rdfid', 
+            re.compile('rdf:ID="#?http://4suite.org/rdf/anonymous/'),
+            'rdf:about="rdf:#'
+        ),
+        ('failsuite', 
+            re.compile('http://4suite.org/rdf/anonymous/'), 
+            'rdf:#',
+        ),
+        # failsuite also made our CellML metadata reference an explicit
+        # uri where there were none
+        # <rdf:Description rdf:about="http://www.cellml.org/models/butera_rinzel_smith_1999_version01">
+        ('explicitcorrectionrootmodel', 
+            re.compile(
+                'rdf:about="http://www.cellml.org/models/'
+                '[^#"]*_[0-9]{4}_version[0-9]{2}[^#"]*'), 
+            r'rdf:about="',
+        ),
+        # the rest without real filename, assuming they were originally
+        # references to cmeta:id nodes but the rdf:about attributes did
+        # not have the prepending # to signifify reference to cmeta:id.
+        ('originalnotid', 
+            re.compile('rdf:about="http://www.cellml.org/models/([^"#]*)"'),
+            r'rdf:about="#\1"',
+        ),
+        # rdf:# fakereource (should be blind nodes) represented as literals?
+        ('rdffakeresource',
+            re.compile('>(rdf:#[^<]*)</[^>]*>'),
+            r' rdf:resource="\1"/>',
+        ),
+        # should be 'rdf:about="#'
+        ('rdfidid?',
+            re.compile('rdf:ID="#*'),
+            'rdf:about="#',
+        ),
+        # file:// do not belong online
+        ('file://',
+            re.compile('="file://.*#([^#]*")'),
+            r'="#\1',
+        ),
+        # normalize nodes to rdf:#
+        ('miscorrection',
+            re.compile(
+                '"(#[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}'
+                '-[0-9a-f]{12})"'),
+            r'"rdf:\1"',
+        ),
+        # remove the rest of the gunk
+        ('miscorrection2',
+            re.compile(
+                'rdf:(about|resource)=".*(rdf:#[0-9a-f]{8}-[0-9a-f]{4}-'
+                '[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})"'),
+            r'rdf:\1="\2"',
+        ),
+    )
+
+    def fix_failsuite(self, data):
+        # Exorcise the remaining RDF/XML possessed by 4Suite.
+        failures = self.failsuite
+        for fail in failures:
+            if fail[1].search(data):
+                data = fail[1].sub(fail[2], data)
+        return data
+
     def process_cellml(self, data):
         dom = lxml.etree.parse(StringIO(data))
         images = dom.xpath('.//tmpdoc:imagedata/@fileref',
