@@ -33,8 +33,10 @@ URIS = [
     'http://www.cellml.org/models/tentusscher_noble_noble_panfilov_2004_version03',
 ]
 
+inputdir = os.path.join(os.path.dirname(__file__), 'input')
+
 def openinputfile(*a):
-    return open(os.path.join(os.path.dirname(__file__), 'input', *a))
+    return open(os.path.join(inputdir, *a))
 
 # XXX bad practice in here
 # many of these tests rely on the PMR being online
@@ -144,7 +146,8 @@ class BaseCellMLBuilderTestCase(unittest.TestCase):
             'a', 'b'))
 
     def test_failsuite(self):
-        for i in xrange(6):
+        files = xrange(6)
+        for i in files:
             j = i + 1
             check = '%d.cellml' % (j)
             o = openinputfile(check)
@@ -163,6 +166,8 @@ class BaseCellMLBuilderTestCase(unittest.TestCase):
                 r'rdf:resource="#[0-9]{8}',
                 r'rdf:about="http://www.cellml.org/models',
                 r'cmeta:modification>[^<]*</cmeta:modification',
+                r'xml:base',
+                r'<model>',
             ]
             for s in badstr:
                 self.assert_(not re.search(s, output),
@@ -185,7 +190,7 @@ class BaseCellMLBuilderTestCase(unittest.TestCase):
                 ([6], '<rdf:Description rdf:about="#ECl_i">'),
                 ([6], '<rdf:Description rdf:about="#D">'),
                 # all files in CellML should have a node about themselves
-                ([1, 2, 3, 4, 5, 6], 'rdf:about=""'),
+                (files, 'rdf:about=""'),
             )
             for ex in expected:
 

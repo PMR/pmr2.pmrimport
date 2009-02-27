@@ -345,7 +345,7 @@ class CellMLBuilder(object):
         # failsuite also made our CellML metadata reference an explicit
         # uri where there were none
         # <rdf:Description rdf:about="http://www.cellml.org/models/butera_rinzel_smith_1999_version01">
-        ('explicitcorrectionrootmodel', 
+        ('absoulute rdf reference', 
             re.compile(
                 'rdf:about="http://www.cellml.org/models/'
                 '[^#"]*_[0-9]{4}_version[0-9]{2}[^#"]*'), 
@@ -370,8 +370,8 @@ class CellMLBuilder(object):
         ),
         # file:// do not belong online
         ('file://',
-            re.compile('="file://.*#([^#]*")'),
-            r'="#\1',
+            re.compile('="file://[^"#]*(#[^#]*")'),
+            r'="\1',
         ),
         # normalize nodes to rdf:#
         ('miscorrection',
@@ -383,9 +383,14 @@ class CellMLBuilder(object):
         # remove the rest of the gunk
         ('miscorrection2',
             re.compile(
-                'rdf:(about|resource)=".*(rdf:#[0-9a-f]{8}-[0-9a-f]{4}-'
+                'rdf:(about|resource)=".+(rdf:#[0-9a-f]{8}-[0-9a-f]{4}-'
                 '[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})"'),
             r'rdf:\1="\2"',
+        ),
+        # xmlbase (not just 4Suite)
+        ('xmlbase',
+            re.compile(' xml:base="[^"]*"'),
+            '',
         ),
     )
 
@@ -394,11 +399,25 @@ class CellMLBuilder(object):
         failures = self.failsuite
         for fail in failures:
             if fail[1].search(data):
+                if '4suite' not in self.result:
+                    self.result['4suite'] = []
+                self.result['4suite'].append(fail[0])
                 data = fail[1].sub(fail[2], data)
         return data
 
     def process_cellml(self, data):
-        dom = lxml.etree.parse(StringIO(data))
+
+        if '<rdf:RDF' not in data:
+            self.result['rdf'] = 1
+
+        data = self.fix_failsuite(data)
+
+        try:
+            dom = lxml.etree.parse(StringIO(data))
+        except:
+            # XXX maybe a debug flag.
+            import pdb;pdb.set_trace()
+
         images = dom.xpath('.//tmpdoc:imagedata/@fileref',
             namespaces=CELLML_NSMAP)
         self.download_images(images)
@@ -595,6 +614,20 @@ class DirBuilder(object):
                     print 'Missing: %s' % i
                 for i in v['exists']:
                     print 'Exists: %s - %s' % i
+
+        failsuite_result = []
+        for k, v in self.summary.iteritems():
+            if '4suite' in v:
+                failsuite_result.append(
+                    '4Suite exorcised from: %s = [%s]' % 
+                    (k, ', '.join(v['4suite'])))
+        failsuite_result.sort()
+        print '\n'.join(failsuite_result)
+
+        for k, v in self.summary.iteritems():
+            if 'rdf' in v:
+                print 'RDF metadata missing in: %s' % k
+
         print '-' * 72
 
     def run(self):
