@@ -146,7 +146,7 @@ class BaseCellMLBuilderTestCase(unittest.TestCase):
             'a', 'b'))
 
     def test_failsuite(self):
-        files = xrange(6)
+        files = xrange(9)
         for i in files:
             j = i + 1
             check = '%d.cellml' % (j)
@@ -189,6 +189,8 @@ class BaseCellMLBuilderTestCase(unittest.TestCase):
                 ([5], '<rdf:Description rdf:about="#N2">'),
                 ([6], '<rdf:Description rdf:about="#ECl_i">'),
                 ([6], '<rdf:Description rdf:about="#D">'),
+                ([7], '<rdf:Description rdf:about="#F">'),
+                ([8], '<rdf:Seq rdf:about="rdf:#citationAuthorsSeq"/>'),
                 # all files in CellML should have a node about themselves
                 (files, 'rdf:about=""'),
             )
