@@ -375,7 +375,7 @@ class CellMLBuilder(object):
         ),
         # file:// do not belong online (the rest of them)
         ('file://',
-            re.compile('="file://[^"#]*((?:#[^#]*")?)'),
+            re.compile('="file://[^"]*(#[^"]*")'),
             r'="\1',
         ),
         # normalize nodes to rdf:#

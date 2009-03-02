@@ -182,6 +182,7 @@ class BaseCellMLBuilderTestCase(unittest.TestCase):
                 ([2], 'rdf:resource="rdf:#7369d2a7-512a-4e5c-b6f0-da233f7fa516"',),
                 ([2], 'rdf:about="rdf:#7369d2a7-512a-4e5c-b6f0-da233f7fa516"',),
                 ([3], 'rdf:about="#sarkar_lauffenburger_2003_version01"',),
+                ([3], 'rdf:about="rdf:#95e791e3-7209-40c6-9a20-846f718f30fb"',),
                 ([4], '<cmeta:comment rdf:resource="rdf:#1e70c7fb-dfc7-4b5e-a971-6f06d6a1e7be"/>'),
                 ([4], '<rdf:Description rdf:about="#butera_rinzel_smith_1999_version01">'),
                 ([5], '<rdf:Description rdf:about="#wolf_sohn_heinrich_kuriyama_2001_version01">'),
