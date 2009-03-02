@@ -358,6 +358,11 @@ class CellMLBuilder(object):
             re.compile('rdf:about="http://www.cellml.org/models/([^"#]*)"'),
             r'rdf:about="#\1"',
         ),
+        # or they could be translated into file
+        ('originalnotid file:///', 
+            re.compile('rdf:about="file:///([^"#]*)"'),
+            r'rdf:about="#\1"',
+        ),
         # rdf:# fakereource (should be blind nodes) represented as literals?
         ('rdffakeresource',
             re.compile('>(rdf:#[^<]*)</[^>]*>'),
@@ -368,9 +373,9 @@ class CellMLBuilder(object):
             re.compile('rdf:ID="#*'),
             'rdf:about="#',
         ),
-        # file:// do not belong online
+        # file:// do not belong online (the rest of them)
         ('file://',
-            re.compile('="file://[^"#]*(#[^#]*")'),
+            re.compile('="file://[^"#]*((?:#[^#]*")?)'),
             r'="\1',
         ),
         # normalize nodes to rdf:#
@@ -383,14 +388,18 @@ class CellMLBuilder(object):
         # remove the rest of the gunk
         ('miscorrection2',
             re.compile(
-                'rdf:(about|resource)=".+(rdf:#[0-9a-f]{8}-[0-9a-f]{4}-'
-                '[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})"'),
+                'rdf:(about|resource)=".+(rdf:#[^"]*)"'),
             r'rdf:\1="\2"',
         ),
         # xmlbase (not just 4Suite)
         ('xmlbase',
             re.compile(' xml:base="[^"]*"'),
             '',
+        ),
+        # PCEnv absolute RDF fragments
+        ('pcenv RDF:about',
+            re.compile(' RDF:about="[^"]*.cellml"'),
+            ' RDF:about=""',
         ),
     )
 
