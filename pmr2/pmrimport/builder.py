@@ -16,10 +16,17 @@ CELLML_NSMAP = {
     'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
 }
 PCENV_SESSION_FRAG = '/getPcenv_session_uri'
+
+CURATION_LEVEL_FRAG = '/getPmr_curationLevel'
+PCENV_CURATION_LEVEL_FRAG = '/getPmr_curationLevelPCEnv'
+JSIM_CURATION_LEVEL_FRAG = '/getPmr_curationLevelJSim'
+COR_CURATION_LEVEL_FRAG = '/getPmr_curationLevelCOR'
+
 BAD_FRAG = [
     'attachment_download',
 ]
-
+MAPPING_FILENAME = 'mapping.txt'
+CURATION_FILENAME = '.curation.txt'
 
 class _ui(ui.ui):
     """\
@@ -74,7 +81,7 @@ def create_workdir(d):
     except OSError:
         raise ValueError('destination directory cannot be created')
 
-def copytree(src, dst, symlinks=False):
+def copytree(src, dst, symlinks=False, ext_replace=None):
     """Recursively copy a directory tree using copy2().
 
     The destination directory must not already exist.
@@ -96,12 +103,20 @@ def copytree(src, dst, symlinks=False):
     for name in names:
         srcname = os.path.join(src, name)
         dstname = os.path.join(dst, name)
+        if ext_replace:
+            src_f, dst_f = ext_replace
+            src_p = '%s.cellml$' % src_f
+            # dealing with dstname because this is the name that will
+            # be written to disk.
+            if re.search(src_p, dstname):
+                dst_p = '%s.cellml' % dst_f
+                dstname = re.sub(src_p, dst_p, dstname)
         try:
             if symlinks and os.path.islink(srcname):
                 linkto = os.readlink(srcname)
                 os.symlink(linkto, dstname)
             elif os.path.isdir(srcname):
-                copytree(srcname, dstname, symlinks)
+                copytree(srcname, dstname, symlinks, ext_replace)
             else:
                 copy2(srcname, dstname)
             # XXX What about devices, sockets etc.?
@@ -178,6 +193,8 @@ class CellMLBuilder(object):
 
     re_clean_rdfres = re.compile('.*(?:http://www.cellml.org/models/|file://).*[^#]$')
     re_clean_rdfres_id = re.compile('.*(?:http://www.cellml.org/models/|file://).*(#.*)$')
+    re_curation = re.compile(':$', re.M)
+    re_zero_curation = lambda self, x: self.re_curation.sub(':0', x)
 
     def __init__(self, workdir, uri, downloaded=None):
         self.uri = uri
@@ -426,6 +443,7 @@ class CellMLBuilder(object):
         except:
             # XXX maybe a debug flag.
             import pdb;pdb.set_trace()
+            pass
 
         images = dom.xpath('.//tmpdoc:imagedata/@fileref',
             namespaces=CELLML_NSMAP)
@@ -551,6 +569,47 @@ class CellMLBuilder(object):
             session = urllib.basejoin(self.uri, session)
         return session
 
+    def download_curation(self):
+        curation = StringIO()
+        curation.write('pmr_curation_star:')
+        self.download(self.uri + CURATION_LEVEL_FRAG, curation)
+        curation.write('\npmr_pcenv_star:')
+        self.download(self.uri + PCENV_CURATION_LEVEL_FRAG, curation)
+        curation.write('\npmr_jsim_star:')
+        self.download(self.uri + JSIM_CURATION_LEVEL_FRAG, curation)
+        curation.write('\npmr_cor_star:')
+        self.download(self.uri + COR_CURATION_LEVEL_FRAG, curation)
+        curation.write('\n')
+        curation_values = self.re_zero_curation(curation.getvalue())
+
+        # yes, I know all variants will share this same file, but the
+        # curation should be the same for all of them.
+        curationpath = os.path.join(self.workdir, self.citation, 
+                                    self.version + CURATION_FILENAME)
+        curationfp = open(curationpath, 'w')
+        # write to curation file
+        curationfp.write(curation_values)
+        curationfp.close()
+
+    def generate_mapping(self):
+        """\
+        generates the mapping file to be used by the workspace builder.
+        """
+
+        mapping = os.path.join(self.workdir, self.citation, MAPPING_FILENAME)
+        mappingfp = open(mapping, 'a')
+        variant = self.variant is not None and self.variant or ''
+        # silly hack to prepend variant.
+        if variant:
+            variant = '_' + variant
+        mappingfp.write('%s,%s,%s,%s\n' % (
+            self.version,
+            variant,
+            self.version,
+            variant,
+        ))
+        mappingfp.close()
+
     def finalize(self):
         # set timestamp on directory
         if self.timestamp and hasattr(os, 'utime'):
@@ -567,9 +626,10 @@ class CellMLBuilder(object):
         self.prepare_path()
         self.download_cellml()
         self.download_session()
+        self.download_curation()
+        self.generate_mapping()
         self.finalize()
         return self.result
-        # self.get_curation()
 
 
 class DirBuilder(object):
@@ -601,6 +661,7 @@ class DirBuilder(object):
         if not self.files:
             self.log.info('Getting file list from "%s"...' % self.filelisturi)
             self.files = get_pmr_urilist(self.filelisturi)
+            self.files.sort()  # in order please.
         else:
             self.log.info('File list already defined')
         self.log.info('Processing %d URIs...' % len(self.files))
@@ -665,6 +726,10 @@ class WorkspaceBuilder(object):
         prepare_logger(loglevel)
         self.log = logging.getLogger('dirbuilder')
         self.summary = {}
+        # tuple will be written to another mapping file with values
+        # from citation_version##_variant##
+        # to revision + file
+        self.mapping = []
 
     def list_models(self):
         result = os.listdir(self.source)
@@ -672,6 +737,18 @@ class WorkspaceBuilder(object):
         return result
 
     def build_hg(self, name):
+        def mkmapping(mappings):
+            result = {}
+            for m in mappings.splitlines():
+                src_v, src_f, dst_v, dst_f = m.split(',')
+                if dst_v not in result:
+                    result[dst_v] = []
+                result[dst_v].append((src_v, src_f, dst_f,))
+            # need to sort this, so back to tuples
+            result = result.items()
+            result.sort()
+            return result
+
         source = os.path.join(self.source, name)
         # Mercurial
         dest = os.path.join(self.dest, name)
@@ -679,17 +756,39 @@ class WorkspaceBuilder(object):
         u = ui.ui(interactive=False)
         repo = hg.repository(u, dest, create=1)
 
-        versions = [os.path.join(source, i) for i in os.listdir(source)]
-        versions.sort()
-        for vp in versions:
-            self.log.debug('copying files from %s to %s', vp, dest)
-            copytree(vp, dest)
-            st = os.stat(vp)
+        # use mapping file.
+        fp = open(os.path.join(source, MAPPING_FILENAME), 'r')
+        mapping_str = fp.read()
+        fp.close()
+
+        # generate mapping dict
+        mapping = mkmapping(mapping_str)
+
+        for dst_v, files in mapping:
+            premap = []
+            self.log.debug('creating version %s', dst_v)
+            for src_v, src_f, dst_f in files:
+                self.log.debug('copying files from %s to %s', src_v, dst_v)
+                # need new copytree
+                ext_replace = None
+                if src_f != dst_f:
+                    ext_replace = (src_f, dst_f)
+                    # need to get new dir
+                source = os.path.join(self.source, name, src_v)
+                copytree(source, dest, ext_replace=ext_replace)
+                premap.append((
+                    '%s_version%s' % (name, ''.join((src_v, src_f,))),
+                    '%s%s' % (name, dst_f),
+                ))
+
+            # this picks the latest source
+            st = os.stat(source)
+
             commit_mtime = time.ctime(st.st_mtime)
             u = ui.ui(interactive=False)
             u.pushbuffer()  # silence ui
             repo = hg.repository(u, dest)
-            msg = 'committing version%s of %s' % (os.path.basename(vp), name)
+            msg = 'committing version%s of %s' % (os.path.basename(dst_v), name)
             usr = 'pmr2.import <nobody@example.com>'
             manifest = repo.changectx(None).manifest()
             files = [i for i in os.listdir(dest)
@@ -699,10 +798,22 @@ class WorkspaceBuilder(object):
             repo.commit([], msg, usr, commit_mtime, force=True)
             self.log.debug(msg)
 
+            # log mapping
+            # XXX kind of redoing a lot of repo inits
+            repo = hg.repository(u, dest)
+            log_r = repo.changectx(None).node().encode('hex')
+            # XXX curation map is repeated even though it's same
+            # again picks the latest version
+            curf = open(os.path.join(source + CURATION_FILENAME))
+            cur = curf.read().replace('\n', ',')
+            curf.close()
+            for log_s, log_d in premap:
+                self.mapping.append(' '.join([log_s, log_d, log_r, cur]))
+
             b = u.popbuffer().splitlines()
             for i in b:
                 if i.startswith('nothing changed'):
-                    self.log.warning('HG: %s in %s', i, vp)
+                    self.log.warning('HG: %s in %s', i, dst_v)
                 else:
                     self.log.debug('HG: %s', i)
 
@@ -713,6 +824,10 @@ class WorkspaceBuilder(object):
         self.log.info('Processing %d model workspaces', len(roots))
         for r in roots:
             self.build_hg(r)
+
+        f = open(os.path.join(self.dest, 'pmr_mapping.txt'), 'w')
+        f.write('\n'.join(self.mapping))
+        f.close()
 
     def run(self):
         self._run()

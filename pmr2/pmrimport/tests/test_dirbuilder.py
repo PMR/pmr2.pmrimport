@@ -365,7 +365,7 @@ class LiveBuilderTestCase(unittest.TestCase):
         t = None
         for i in xrange(8):
             st = os.stat(os.path.join(self.builddir,
-                'beeler_reuter_1977/0%d/cellml_rendering.gif' % i + 1))
+                'beeler_reuter_1977/0%d/cellml_rendering.gif' % (i + 1)))
             fs = st.st_size
             mt = st.st_mtime
             if s is None:
