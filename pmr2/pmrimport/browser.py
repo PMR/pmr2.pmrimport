@@ -71,6 +71,9 @@ class PMR2ImportForm(z3c.form.form.AddForm):
         containers of a default/fresh PMR2 instance.
         """
 
+        # XXX validation make sure this thing does not exist.
+        # self.context[PMR_MAPPING_FILE]
+
         def build_workspace(id_):
             # makes the workspace object if it does not currently exist
             # gets one if it does.
@@ -101,14 +104,15 @@ class PMR2ImportForm(z3c.form.form.AddForm):
                 manifest = obj.get_storage().manifest(None, '').next()
                 filenames = [i['file'] for i in manifest['fentries']()
                                      if i['file'].endswith('.cellml')]
+                curation = dict([i.split(':') for i in 
+                                 curmap[manifest['node']].split(',') if i])
                 # exposure obj
                 # again, we use revision id, they shouldn't collide.
-                curation = curmap[manifest['node']]
                 fdata = {
                     'title': obj.title,
                     'workspace': unicode(id_),
                     'commit_id': unicode(manifest['node']),
-                    'curation': curation.replace(',', '\n'),
+                    'curation': curation,
                 }
                 # XXX curation not implemented here or at the form!
                 form = exposure.ExposureAddForm(exposure_root, None)
