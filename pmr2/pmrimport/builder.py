@@ -9,24 +9,8 @@ from shutil import copy, copy2, copystat
 import lxml.etree
 from mercurial import ui, hg, revlog, cmdutil, util
 
-CELLML_FILE_LIST = 'http://www.cellml.org/models/list_txt'
-CELLML_NSMAP = {
-    'tmpdoc': 'http://cellml.org/tmp-documentation',
-    'pcenv': 'http://www.cellml.org/tools/pcenv/',
-    'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-}
-PCENV_SESSION_FRAG = '/getPcenv_session_uri'
+from constants import *
 
-CURATION_LEVEL_FRAG = '/getPmr_curationLevel'
-PCENV_CURATION_LEVEL_FRAG = '/getPmr_curationLevelPCEnv'
-JSIM_CURATION_LEVEL_FRAG = '/getPmr_curationLevelJSim'
-COR_CURATION_LEVEL_FRAG = '/getPmr_curationLevelCOR'
-
-BAD_FRAG = [
-    'attachment_download',
-]
-MAPPING_FILENAME = 'mapping.txt'
-CURATION_FILENAME = '.curation.txt'
 
 class _ui(ui.ui):
     """\
@@ -825,7 +809,7 @@ class WorkspaceBuilder(object):
         for r in roots:
             self.build_hg(r)
 
-        f = open(os.path.join(self.dest, 'pmr_mapping.txt'), 'w')
+        f = open(os.path.join(self.dest, PMR_MAPPING_FILE), 'w')
         f.write('\n'.join(self.mapping))
         f.close()
 

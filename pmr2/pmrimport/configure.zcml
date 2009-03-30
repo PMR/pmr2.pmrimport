@@ -1,0 +1,14 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="pmr2.pmrimport">
+
+  <five:registerPackage package="." initialize=".initialize" />
+
+  <include package="plone.z3cform" />
+
+  <include file="browser.zcml" />
+
+</configure>
