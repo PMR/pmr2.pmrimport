@@ -10,5 +10,6 @@
   <include package="plone.z3cform" />
 
   <include file="browser.zcml" />
+  <include file="adapter.zcml" />
 
 </configure>

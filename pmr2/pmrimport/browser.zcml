@@ -1,7 +1,7 @@
 <configure 
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
-    i18n_domain="pmr2.app">
+    i18n_domain="pmr2.pmrimport">
 
   <include package="pmr2.app.security" />
 

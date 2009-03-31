@@ -6,8 +6,8 @@ class IPMRImportMap(zope.interface.Interface):
     Maps between the two thing,
     """
 
-    map = zope.schema.Dict(
-        title=u'Model Map',
+    pmrimport_map = zope.schema.Dict(
+        title=u'PMR Import Model Map',
         description=u'The dictionary of mappings between PMR and PMR2.',
     )
 

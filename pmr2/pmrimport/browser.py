@@ -11,6 +11,7 @@ from pmr2.app.content import *
 from pmr2.app.browser import widget
 from pmr2.app.browser import exposure
 
+from interfaces import IPMRImportMap
 from content import PMRImportMap
 from constants import PMR_MAPPING_FILE
 
@@ -146,6 +147,11 @@ class PMR2ImportForm(z3c.form.form.AddForm):
             # also assuming revision id don't happen to collide
             curmap[rev] = curation
 
+        # adapt PMR2 into the ImportMap object, and assign the map 
+        # attribute to it.
+        ctxobj = IPMRImportMap(self.context)
+        ctxobj.pmrimport_map = map
+
         self.created = self.existed = self.exposed = 0
         self.failed = []
         self.norepo = []
@@ -177,11 +183,6 @@ class PMR2ImportForm(z3c.form.form.AddForm):
                 continue
 
             build_exposure(id_)
-
-        obj = PMRImportMap(PMR_MAPPING_FILE)
-        self.context[PMR_MAPPING_FILE] = obj
-        ctxobj = self.context[PMR_MAPPING_FILE]
-        ctxobj.map = map
 
         # marking this as done.
         self._finishedAdd = True

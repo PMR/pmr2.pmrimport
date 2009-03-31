@@ -1,0 +1,22 @@
+<configure 
+    xmlns="http://namespaces.zope.org/zope"
+    i18n_domain="pmr2.pmrimport">
+
+  <!-- 
+    we need to make PMR2 root object implement the interface that
+    allows persistent annotations. 
+  -->
+  <class class="pmr2.app.content.PMR2">
+    <implements interface="zope.annotation.interfaces.IAttributeAnnotatable"/>
+  </class>
+
+  <!-- 
+    Then we can define the adapter.
+  -->
+  <adapter
+      for="pmr2.app.interfaces.IPMR2"
+      provides=".interfaces.IPMRImportMap"
+      factory=".content.PMRImportMapFactory"
+      />
+
+</configure>

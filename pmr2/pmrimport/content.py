@@ -1,28 +1,32 @@
 from zope import interface
+from zope import component
 from zope.schema import fieldproperty
-from interfaces import IPMRImportMap
-#from persistent import Persistent
-from Products.Archetypes.atapi import BaseContent
+from zope.annotation import factory
+from persistent import Persistent
 
-from pmr2.app.interfaces import *
+from pmr2.app.interfaces import IPMR2
 from pmr2.app.mixin import TraversalCatchAll
 
+from interfaces import IPMRImportMap
 
-#class PMRImportMap(Persistent):
-class PMRImportMap(BaseContent):
+
+class PMRImportMap(Persistent):
     """\
     The PMR Import map implementation.
     """
 
     interface.implements(IPMRImportMap)
-    map = fieldproperty.FieldProperty(IPMRImportMap['map'])
+    component.adapts(IPMR2)
+    pmrimport_map = fieldproperty.FieldProperty(IPMRImportMap['pmrimport_map'])
 
     def find_uri(self, uri):
-        if uri not in self.map:
+        if uri not in self.pmrimport_map:
             return None
 
         # XXX since workspace name is not saved but derived from 
         # original filename.
         workspace = s[:s.index('_version')]
-        rev, file = self.map[uri]
+        rev, file = self.pmrimport_map[uri]
         return (workspace, rev, file)
+
+PMRImportMapFactory = factory(PMRImportMap)
