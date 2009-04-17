@@ -88,6 +88,7 @@ def copytree(src, dst, symlinks=False, ext_replace=None):
         srcname = os.path.join(src, name)
         dstname = os.path.join(dst, name)
         if ext_replace:
+            # XXX need to make this handle session files, too.
             src_f, dst_f = ext_replace
             src_p = '%s.cellml$' % src_f
             # dealing with dstname because this is the name that will

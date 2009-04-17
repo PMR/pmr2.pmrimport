@@ -4,7 +4,7 @@ import zope.component
 import z3c.form.field
 import z3c.form.form
 
-from plone.app.z3cform import layout
+from plone.z3cform import layout
 
 from pmr2.app.interfaces import *
 from pmr2.app.content import *
@@ -105,8 +105,9 @@ class PMR2ImportForm(z3c.form.form.AddForm):
                 manifest = obj.get_storage().manifest(None, '').next()
                 filenames = [i['file'] for i in manifest['fentries']()
                                      if i['file'].endswith('.cellml')]
-                curation = dict([i.split(':') for i in 
-                                 curmap[manifest['node']].split(',') if i])
+                clist = [i.split(':') for i in 
+                                 curmap[manifest['node']].split(',') if i]
+                curation = dict([(i[0], [i[1]]) for i in clist])
                 # exposure obj
                 # again, we use revision id, they shouldn't collide.
                 fdata = {
@@ -145,7 +146,7 @@ class PMR2ImportForm(z3c.form.form.AddForm):
             # potentially be replaced by different data source, but if
             # curators gave all models from same rev consistent rating
             # also assuming revision id don't happen to collide
-            curmap[rev] = curation
+            curmap[rev] = unicode(curation)
 
         # adapt PMR2 into the ImportMap object, and assign the map 
         # attribute to it.

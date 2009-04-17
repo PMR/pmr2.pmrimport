@@ -17,6 +17,7 @@
       for="pmr2.app.interfaces.IPMR2"
       provides=".interfaces.IPMRImportMap"
       factory=".content.PMRImportMapFactory"
+      name="PMRImportMap"
       />
 
 </configure>
