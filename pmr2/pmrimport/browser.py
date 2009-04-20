@@ -150,7 +150,7 @@ class PMR2ImportForm(z3c.form.form.AddForm):
 
         # adapt PMR2 into the ImportMap object, and assign the map 
         # attribute to it.
-        ctxobj = IPMRImportMap(self.context)
+        ctxobj = zope.component.queryAdapter(self.context, name='PMRImportMap')
         ctxobj.pmrimport_map = map
 
         self.created = self.existed = self.exposed = 0
