@@ -3,8 +3,9 @@ import urllib, urllib2
 import os, os.path
 import logging
 import time
+import tempfile
 from cStringIO import StringIO
-from shutil import copy, copy2, copystat
+from shutil import copy, copy2, copystat, rmtree
 
 import lxml.etree
 from mercurial import ui, hg, revlog, cmdutil, util
@@ -65,7 +66,7 @@ def create_workdir(d):
     except OSError:
         raise ValueError('destination directory cannot be created')
 
-def copytree(src, dst, symlinks=False, ext_replace=None):
+def copytree(src, dst, symlinks=False):
     """Recursively copy a directory tree using copy2().
 
     The destination directory must not already exist.
@@ -87,21 +88,12 @@ def copytree(src, dst, symlinks=False, ext_replace=None):
     for name in names:
         srcname = os.path.join(src, name)
         dstname = os.path.join(dst, name)
-        if ext_replace:
-            # XXX need to make this handle session files, too.
-            src_f, dst_f = ext_replace
-            src_p = '%s.cellml$' % src_f
-            # dealing with dstname because this is the name that will
-            # be written to disk.
-            if re.search(src_p, dstname):
-                dst_p = '%s.cellml' % dst_f
-                dstname = re.sub(src_p, dst_p, dstname)
         try:
             if symlinks and os.path.islink(srcname):
                 linkto = os.readlink(srcname)
                 os.symlink(linkto, dstname)
             elif os.path.isdir(srcname):
-                copytree(srcname, dstname, symlinks, ext_replace)
+                copytree(srcname, dstname, symlinks)
             else:
                 copy2(srcname, dstname)
             # XXX What about devices, sockets etc.?
@@ -727,12 +719,18 @@ class WorkspaceBuilder(object):
             for m in mappings.splitlines():
                 src_v, src_f, dst_v, dst_f = m.split(',')
                 if dst_v not in result:
-                    result[dst_v] = []
-                result[dst_v].append((src_v, src_f, dst_f,))
+                    result[dst_v] = {}
+                if src_v not in result[dst_v]:
+                    result[dst_v][src_v] = []
+                result[dst_v][src_v].append((src_f, dst_f,))
             # need to sort this, so back to tuples
-            result = result.items()
-            result.sort()
-            return result
+            mapping = []
+            for (i, j) in result.items():
+                j = j.items()
+                j.sort()
+                mapping.append((i, j,))
+            mapping.sort()
+            return mapping
 
         source = os.path.join(self.source, name)
         # Mercurial
@@ -749,22 +747,56 @@ class WorkspaceBuilder(object):
         # generate mapping dict
         mapping = mkmapping(mapping_str)
 
-        for dst_v, files in mapping:
-            premap = []
+        for dst_v, src_map in mapping:
             self.log.debug('creating version %s', dst_v)
-            for src_v, src_f, dst_f in files:
+            premap = []
+
+            # for each "version", map old files into new files
+            for src_v, filemap in src_map:
                 self.log.debug('copying files from %s to %s', src_v, dst_v)
-                # need new copytree
-                ext_replace = None
-                if src_f != dst_f:
-                    ext_replace = (src_f, dst_f)
-                    # need to get new dir
                 source = os.path.join(self.source, name, src_v)
-                copytree(source, dest, ext_replace=ext_replace)
-                premap.append((
-                    '%s_version%s' % (name, ''.join((src_v, src_f,))),
-                    '%s%s' % (name, dst_f),
-                ))
+
+                tmpdir = tempfile.mkdtemp(dir=self.temproot)
+                copytree(source, tmpdir)
+                # rename fragments
+                for src_f, dst_f in filemap:
+                    # rename cellml
+                    # XXX I am lazy so I cook some copypasta
+                    cellml_sf = '%s%s%s' % (name, src_f, '.cellml')
+                    cellml_df = '%s%s%s' % (name, dst_f, '.cellml')
+                    cellml_src_p = os.path.join(tmpdir, cellml_sf)
+                    cellml_dst_p = os.path.join(tmpdir, cellml_df)
+                    if os.path.exists(cellml_src_p):
+                        # no reason why this does NOT exist
+                        os.rename(cellml_src_p, cellml_dst_p)
+
+                    sess_src_p = os.path.join(tmpdir, '%s%s%s' % 
+                        (name, src_f, '.session.xml'))
+                    sess_dst_p = os.path.join(tmpdir, '%s%s%s' % 
+                        (name, dst_f, '.session.xml'))
+                    if os.path.exists(sess_src_p):
+                        # rename first
+                        os.rename(sess_src_p, sess_dst_p)
+                        # read
+                        f = open(sess_dst_p)
+                        session_content = f.read()
+                        f.close()
+                        # write
+                        f = open(sess_dst_p, 'w')
+                        # XXX potential danger, but this is a fairly
+                        # plain RDF file with attribute values that are
+                        # not named the same as some other elements in the
+                        # RDF file, so it *should* be fine
+                        f.write(session_content.replace(cellml_sf, cellml_df))
+                        f.close()
+
+                    premap.append((
+                        '%s_version%s' % (name, ''.join((src_v, src_f,))),
+                        '%s%s' % (name, dst_f),
+                    ))
+                # renaming done, dump stuff from temp to new
+                copytree(tmpdir, dest)
+                rmtree(tmpdir)
 
             # this picks the latest source
             st = os.stat(source)
@@ -807,8 +839,13 @@ class WorkspaceBuilder(object):
         self.log.info('Workspace root %s created', self.dest)
         roots = self.list_models()
         self.log.info('Processing %d model workspaces', len(roots))
-        for r in roots:
-            self.build_hg(r)
+        try:
+            self.temproot = tempfile.mkdtemp()
+            for r in roots:
+                self.build_hg(r)
+        finally:
+            # cleanup
+            rmtree(self.temproot)
 
         f = open(os.path.join(self.dest, PMR_MAPPING_FILE), 'w')
         f.write('\n'.join(self.mapping))
