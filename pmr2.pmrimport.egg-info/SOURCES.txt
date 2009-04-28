@@ -16,6 +16,7 @@ pmr2.pmrimport.egg-info/top_level.txt
 pmr2/pmrimport/__init__.py
 pmr2/pmrimport/browser.py
 pmr2/pmrimport/builder.py
+pmr2/pmrimport/constants.py
 pmr2/pmrimport/content.py
 pmr2/pmrimport/interfaces.py
 pmr2/pmrimport/tests/__init__.py
