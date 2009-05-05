@@ -102,7 +102,9 @@ class PMR2ImportForm(z3c.form.form.AddForm):
             # create exposure root object using the form for consistency.
             obj = workspace_root[id_]
             try:
-                manifest = obj.get_storage().manifest(None, '').next()
+                storage = zope.component.queryMultiAdapter((obj, ), 
+                    name='PMR2Storage')
+                manifest = storage.manifest(None, '').next()
                 filenames = [i['file'] for i in manifest['fentries']()
                                      if i['file'].endswith('.cellml')]
                 clist = [i.split(':') for i in 
