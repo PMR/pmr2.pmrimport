@@ -107,9 +107,12 @@ class PMR2ImportForm(z3c.form.form.AddForm):
                 manifest = storage.manifest(None, '').next()
                 filenames = [i['file'] for i in manifest['fentries']()
                                      if i['file'].endswith('.cellml')]
-                clist = [i.split(':') for i in 
+                if manifest['node'] in curmap:
+                    clist = [i.split(':') for i in 
                                  curmap[manifest['node']].split(',') if i]
-                curation = dict([(i[0], [i[1]]) for i in clist])
+                    curation = dict([(i[0], [i[1]]) for i in clist])
+                else:
+                    curation = {}
                 # exposure obj
                 # again, we use revision id, they shouldn't collide.
                 fdata = {
