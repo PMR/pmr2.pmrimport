@@ -408,11 +408,48 @@ class CellMLBuilder(object):
                 data = fail[1].sub(fail[2], data)
         return data
 
+    def get_metadata(self):
+        metadata = StringIO()
+        self.download(self.uri + METADATA_FRAG, metadata)
+        metadata.seek(0)
+        return metadata
+
+    def fix_missing_cellml_rdf(self, data):
+        # XXX just replace here and not in failsuite because we need
+        # this value correct to determine if we need to reapply RDF.
+        data = data.replace(
+            'http://www.w3.org/1999/0P/PP-rdf-syntax-ns#',
+            'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+        )
+        if '</rdf:RDF>' not in data[-200:]:
+            # this checks whether we have processed RDF. if not, we
+            # attempt to get it from the metadata part
+            metadata = self.get_metadata()
+            try:
+                dom = lxml.etree.parse(metadata)
+                paths = dom.xpath('/rdf:RDF/rdf:Description', 
+                    namespaces={'rdf': 
+                    'http://www.w3.org/1999/02/22-rdf-syntax-ns#'})
+                if paths:
+                    self.result['rdf'] = 'rdf re-appended from metadata'
+                    # cheese
+                    metadata_s = re.sub('<\?xml .*\?>', '',
+                        metadata.getvalue(),
+                    )
+                    data = data.replace('</model>', metadata_s + '</model>')
+                else:
+                    if '<rdf:RDF' in data:
+                        self.result['rdf'] = 'rdf was unprocessed'
+                    else:
+                        self.result['rdf'] = 'rdf is absent in file'
+            except:
+                self.result['rdf'] = 'rdf is absent in file and metadata ' \
+                                     'from repo is broken'
+        return data
+
     def process_cellml(self, data):
 
-        if '<rdf:RDF' not in data:
-            self.result['rdf'] = 1
-
+        data = self.fix_missing_cellml_rdf(data)
         data = self.fix_failsuite(data)
 
         try:
@@ -673,7 +710,7 @@ class DirBuilder(object):
 
         for k, v in self.summary.iteritems():
             if 'rdf' in v:
-                print 'RDF metadata missing in: %s' % k
+                print 'RDF metadata info for %s : %s' % (k, v['rdf'])
 
         print '-' * 72
 

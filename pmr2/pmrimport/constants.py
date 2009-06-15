@@ -5,6 +5,7 @@ CELLML_NSMAP = {
     'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
 }
 PCENV_SESSION_FRAG = '/getPcenv_session_uri'
+METADATA_FRAG = '/metadata'
 
 CURATION_LEVEL_FRAG = '/getPmr_curationLevel'
 PCENV_CURATION_LEVEL_FRAG = '/getPmr_curationLevelPCEnv'

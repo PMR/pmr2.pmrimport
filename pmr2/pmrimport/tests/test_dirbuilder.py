@@ -31,6 +31,7 @@ URIS = [
     'http://www.cellml.org/models/noble_varghese_kohl_noble_1998_version06_variant01',
     'http://www.cellml.org/models/noble_varghese_kohl_noble_1998_version07_variant02',
     'http://www.cellml.org/models/tentusscher_noble_noble_panfilov_2004_version03',
+    'http://www.cellml.org/models/barberis_klipp_vanoni_alberghina_2007_version01',
 ]
 
 inputdir = os.path.join(os.path.dirname(__file__), 'input')
@@ -262,6 +263,15 @@ class BaseCellMLBuilderTestCase(unittest.TestCase):
         self.builder.download_cellml()
         f = open(self.builder.cellml_filename).read()
         self.assert_('cmeta:id="environment_time"' in f)
+
+    def test_download_cellml_mangle_metadata(self):
+        uri = URIS[19]  # barberis_klipp_vanoni_alberghina_2007_version01
+        self.builder.uri = uri
+        self.builder.prepare_path()
+        self.builder.download_cellml()
+        f = open(self.builder.cellml_filename).read()
+        self.assert_('<rdf:RDF' in f)
+        self.assert_('</rdf:RDF>\n</model>' in f)
 
     def test_get_session_uri(self):
         uri = URIS[0]  # beeler_reuter_1977_version01
