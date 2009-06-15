@@ -408,6 +408,21 @@ class CellMLBuilder(object):
                 data = fail[1].sub(fail[2], data)
         return data
 
+    # PCEnv absolute RDF fragments
+    rdf_ns_fail = (
+        re.compile('xmlns:rdf="[^"]*"'),
+        'xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"',
+    )
+    
+    def fix_rdfnsfail(self, data):
+        # Exorcise the remaining RDF/XML possessed by 4Suite.
+        fail = self.rdf_ns_fail
+        data2 = fail[0].sub(fail[1], data)
+        if data != data2:
+            self.result['rdfns'] = 1
+            return data2
+        return data
+
     def get_metadata(self):
         metadata = StringIO()
         self.download(self.uri + METADATA_FRAG, metadata)
@@ -417,10 +432,8 @@ class CellMLBuilder(object):
     def fix_missing_cellml_rdf(self, data):
         # XXX just replace here and not in failsuite because we need
         # this value correct to determine if we need to reapply RDF.
-        data = data.replace(
-            'http://www.w3.org/1999/0P/PP-rdf-syntax-ns#',
-            'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-        )
+        data = self.fix_rdfnsfail(data)
+
         if '</rdf:RDF>' not in data[-200:]:
             # this checks whether we have processed RDF. if not, we
             # attempt to get it from the metadata part
@@ -711,6 +724,8 @@ class DirBuilder(object):
         for k, v in self.summary.iteritems():
             if 'rdf' in v:
                 print 'RDF metadata info for %s : %s' % (k, v['rdf'])
+            if 'rdfns' in v:
+                print 'RDF namespace repaired for %s' % k
 
         print '-' * 72
 
