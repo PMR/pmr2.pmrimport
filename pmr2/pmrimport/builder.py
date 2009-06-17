@@ -894,6 +894,8 @@ class WorkspaceBuilder(object):
         try:
             self.temproot = tempfile.mkdtemp()
             for r in roots:
+                if r.startswith('.'):
+                    continue
                 self.build_hg(r)
         finally:
             # cleanup
