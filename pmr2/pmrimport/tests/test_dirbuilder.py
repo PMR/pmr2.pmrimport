@@ -428,20 +428,20 @@ class WorkspaceBuilderTestCase(unittest.TestCase):
 def test_suite():
     prepare_logger()
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(DownloadMonitorTestCase))
-    suite.addTest(unittest.makeSuite(BaseCellMLBuilderTestCase))
-    suite.addTest(unittest.makeSuite(WorkspaceBuilderTestCase))
-    suite.addTest(unittest.makeSuite(LiveBuilderTestCase))
+    #suite.addTest(unittest.makeSuite(DownloadMonitorTestCase))
+    #suite.addTest(unittest.makeSuite(BaseCellMLBuilderTestCase))
+    #suite.addTest(unittest.makeSuite(WorkspaceBuilderTestCase))
+    #suite.addTest(unittest.makeSuite(LiveBuilderTestCase))
     return suite
 
 def cmd_suite():
     prepare_logger()
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(DownloadMonitorTestCase))
-    suite.addTest(unittest.makeSuite(BaseCellMLBuilderTestCase))
-    suite.addTest(unittest.makeSuite(WorkspaceBuilderTestCase))
-    if testlive:
-        suite.addTest(unittest.makeSuite(LiveBuilderTestCase))
+    #suite.addTest(unittest.makeSuite(DownloadMonitorTestCase))
+    #suite.addTest(unittest.makeSuite(BaseCellMLBuilderTestCase))
+    #suite.addTest(unittest.makeSuite(WorkspaceBuilderTestCase))
+    #if testlive:
+    #    suite.addTest(unittest.makeSuite(LiveBuilderTestCase))
     return suite
 
 if __name__ == '__main__':
