@@ -14,7 +14,7 @@
     Then we can define the adapter.
   -->
   <adapter
-      for="pmr2.app.interfaces.IPMR2"
+      for="pmr2.app.content.interfaces.IPMR2"
       provides=".interfaces.IPMRImportMap"
       factory=".content.PMRImportMapFactory"
       name="PMRImportMap"

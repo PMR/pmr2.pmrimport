@@ -4,7 +4,7 @@ from zope.schema import fieldproperty
 from zope.annotation import factory
 from persistent import Persistent
 
-from pmr2.app.interfaces import IPMR2
+from pmr2.app.content.interfaces import IPMR2
 from pmr2.app.mixin import TraversalCatchAll
 
 from interfaces import IPMRImportMap
