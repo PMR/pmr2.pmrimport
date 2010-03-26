@@ -3,8 +3,6 @@ import os
 from os.path import dirname, join
 from cStringIO import StringIO
 
-from pmr2.pmrimport.builder import *
-
 
 class RootTestCase(unittest.TestCase):
 
@@ -13,10 +11,6 @@ class RootTestCase(unittest.TestCase):
 
     def tearDown(self):
         pass
-
-    def test_basic(self):
-        o = DirBuilder('tmp', [])
-        o = WorkspaceBuilder('source', 'dest')
 
 
 def test_suite():

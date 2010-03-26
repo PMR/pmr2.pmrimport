@@ -2,10 +2,6 @@ from setuptools import setup, find_packages
 import os
 
 version = '0.0'
-scripts = [
-    'pmr2_pmrextract',
-    'pmr2_mkhg',
-]
 
 setup(name='pmr2.pmrimport',
       version=version,
@@ -22,7 +18,6 @@ setup(name='pmr2.pmrimport',
       author_email='tommy.yu@auckland.ac.nz',
       url='',
       license='GPL',
-      scripts=scripts,
       packages=find_packages(exclude=['ez_setup']),
       namespace_packages=['pmr2'],
       include_package_data=True,
