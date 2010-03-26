@@ -20,4 +20,6 @@
       name="PMRImportMap"
       />
 
+  <adapter factory=".traverse.PMR1Traverser" />
+
 </configure>

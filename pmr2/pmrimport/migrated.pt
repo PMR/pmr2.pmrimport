@@ -1,0 +1,37 @@
+<p>
+  The requested model, <span tal:replace="view/model_name"/>, was part 
+  of the CellML Model Repository running on PMR1.  Due to ongoing 
+  developments, PMR1 had been decommissioned and replaced by PMR2.  The
+  model and associated data had been migrated, but its associated
+  presentational page (now called Exposure) was not regenerated for this
+  version of the model.
+</p>
+
+<tal:if tal:condition="view/related_exposures">
+  <p>
+    However, Exposure(s) had been made for later versions of this model.
+    They are listed below.
+  </p>
+
+  <ul>
+    <li tal:repeat="i view/related_exposures">
+      <a tal:attributes="href i/getURL"
+         tal:content="i/Title"></a>
+    </li>
+  </ul>
+</tal:if>
+
+<tal:if tal:condition="not:view/related_exposures">
+  <p>
+    Unfortunately, the latest Exposures may be temporary unavailable or
+    had not been regenerated.  Please check back later.
+  </p>
+</tal:if>
+
+<p>
+  The original version of this model that was located here is now stored 
+  as a revision within its workspace.  You may find its associated 
+  diagrams and data at: <a href="" 
+    tal:attributes="href view/workspace_uri" 
+    tal:content="view/workspace_uri"></a>.
+</p>

@@ -3,15 +3,13 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="pmr2.pmrimport">
 
-  <include package="pmr2.app.security" />
-
-  <!-- The import form view -->
+  <!-- the selection view -->
 
   <browser:page
-      for="pmr2.app.content.PMR2"
-      name="pmrimport"
-      class=".browser.PMR2ImportFormView"
-      permission="pmr2.app.security.ManagePMR2"
+      for=".interfaces.IPMR1"
+      name="pmr1"
+      class=".browser.PMR1MigratedView"
+      permission="zope2.View"
       />
 
 </configure>

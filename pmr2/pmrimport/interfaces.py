@@ -15,3 +15,9 @@ class IPMRImportMap(zope.interface.Interface):
         """\
         Returns the new URI to the model, given the old model name.
         """
+
+
+class IPMR1(zope.interface.Interface):
+    """\
+    Marker interface for traversing.
+    """
