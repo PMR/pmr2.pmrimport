@@ -1,4 +1,3 @@
-import re
 from paste.httpexceptions import HTTPNotFound, HTTPFound
 import zope.component
 from zope.publisher.interfaces import IRequest
@@ -7,8 +6,6 @@ from paste.httpexceptions import HTTPNotFound
 
 from pmr2.app.interfaces import IPMR2GlobalSettings
 from pmr2.pmrimport.interfaces import IPMR1
-
-re_clean_name = re.compile('_version[0-9]{2}(.*)$')
 
 
 class PMR1Traverser(DefaultPublishTraverse):
@@ -52,15 +49,15 @@ class PMR1Traverser(DefaultPublishTraverse):
             self.context.absolute_url(), 
             workspace_root,
             workspace,
-            '@@file',
+            '@@%s',
             rev,
         ])
 
         if trail and trail[0] in ('download', 'pmr_model'):
             # we redirect to the original CellML file that should now
             # be in a workspace.
-            fn = re_clean_name.sub('\\1.cellml', name)
-            uri = '/'.join((workspace_uri, fn,))
+            fn = info[0] + '.cellml'
+            uri = '/'.join((workspace_uri, fn,)) % 'rawfile'
             return request.response.redirect(uri)
 
         view = zope.component.getMultiAdapter((self.context, request), 
@@ -70,6 +67,6 @@ class PMR1Traverser(DefaultPublishTraverse):
         view.workspace = workspace
         view.model_name = name
         view.commit_id = rev
-        view.workspace_uri = workspace_uri
         view.migration_info = info
+        view.workspace_uri = workspace_uri % 'file'
         return view
