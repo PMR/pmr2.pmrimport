@@ -20,21 +20,49 @@ from content import PMRImportMap
 
 class PMR1MigratedView(layout.FormWrapper):
     """
-    A hook for handling PMR1 uris.
+    A view with information about the PMR1 to PMR2 migration.
     """
 
     form_instance = ViewPageTemplateFile('migrated.pt')
+    workspace = None
+    model_name = None
+    commit_id = None
+    workspace_uri = None
 
     def __call__(self):
 
-        # search
-        #for k, v in self.request['_pmr1']
+        # This view is not meant to be accessed directly by a client.
+        # Redirect to context's default view if none of the values above
+        # are set (so don't set this as the default view).
+        if self.workspace is None:
+            return self.request.response.redirect(self.context.absolute_url())
+
         catalog = getToolByName(self.context, 'portal_catalog')
+
+        # search the catalog for the exposure page for this version of
+        # the model.
+        exposure = catalog(
+            review_state='published',
+            pmr2_exposure_workspace=self.workspace,
+            pmr2_exposure_commit_id=self.commit_id,
+        )
+        if exposure:
+            # join
+            target = '%s/%s.cellml' % (
+                exposure[0].getURL(), self.migration_info[0])
+            # would be nice if we can set an informative status message
+            # about redirection due to migration of PMR1 to PMR2.
+            return self.request.response.redirect(target)
+
+        # looks like there isn't an exposure page for this version, so
+        # we find exposure pages from this workspace.
         self.related_exposures = catalog(
-            pmr2_exposure_workspace=self.workspace)
+            review_state='published',
+            pmr2_exposure_workspace=self.workspace,
+            )
         # no border in this case.
         self.request['disable_border'] = True
         return super(PMR1MigratedView, self).__call__()
 
     def label(self):
-        return u'Model has been moved.'
+        return u'PMR2 Migration Notice'

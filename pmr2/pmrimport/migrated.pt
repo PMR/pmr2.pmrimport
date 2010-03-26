@@ -1,37 +1,34 @@
 <p>
-  The requested model, <span tal:replace="view/model_name"/>, was part 
-  of the CellML Model Repository running on PMR1.  Due to ongoing 
-  developments, PMR1 had been decommissioned and replaced by PMR2.  The
-  model and associated data had been migrated, but its associated
-  presentational page (now called Exposure) was not regenerated for this
-  version of the model.
+  This model, <span tal:replace="view/model_name"/>, was present in the
+  PMR1 version of the CellML Model Repository.  If you are interested
+  in the raw model files as they were for this version, you may find 
+  them at <a href="" tal:attributes="href view/workspace_uri">this 
+  revision of its workspace</a>.
 </p>
 
 <tal:if tal:condition="view/related_exposures">
-  <p>
-    However, Exposure(s) had been made for later versions of this model.
-    They are listed below.
-  </p>
+<p>
+  However, if you are interested in its associated presentational page 
+  (now called Exposure) as it appeared in PMR1, this version of the
+  model did not have its pages regenerated during the migration as it
+  was not the latest version.  Below are page(s) that are generated for
+  later version(s) of this model.
+</p>
 
-  <ul>
-    <li tal:repeat="i view/related_exposures">
-      <a tal:attributes="href i/getURL"
-         tal:content="i/Title"></a>
-    </li>
-  </ul>
+<ul>
+  <li tal:repeat="i view/related_exposures">
+    <a tal:attributes="href i/getURL"
+       tal:content="i/Title"></a>
+  </li>
+</ul>
 </tal:if>
+
 
 <tal:if tal:condition="not:view/related_exposures">
-  <p>
-    Unfortunately, the latest Exposures may be temporary unavailable or
-    had not been regenerated.  Please check back later.
-  </p>
-</tal:if>
-
 <p>
-  The original version of this model that was located here is now stored 
-  as a revision within its workspace.  You may find its associated 
-  diagrams and data at: <a href="" 
-    tal:attributes="href view/workspace_uri" 
-    tal:content="view/workspace_uri"></a>.
+  However, if you are interested in its associated presentational page 
+  (now called Exposure) as it appeared in PMR1, this model did not have
+  its presentational pages regenerated for any of its versions or it is
+  temporarily not found.  Please check back later.
 </p>
+</tal:if>

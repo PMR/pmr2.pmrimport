@@ -59,7 +59,7 @@ class PMR1Traverser(DefaultPublishTraverse):
         if trail and trail[0] in ('download', 'pmr_model'):
             # we redirect to the original CellML file that should now
             # be in a workspace.
-            fn = re_clean_name.sub('\\1.cellml', oid)
+            fn = re_clean_name.sub('\\1.cellml', name)
             uri = '/'.join((workspace_uri, fn,))
             return request.response.redirect(uri)
 
@@ -71,4 +71,5 @@ class PMR1Traverser(DefaultPublishTraverse):
         view.model_name = name
         view.commit_id = rev
         view.workspace_uri = workspace_uri
+        view.migration_info = info
         return view
