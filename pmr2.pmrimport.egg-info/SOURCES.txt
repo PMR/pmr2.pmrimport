@@ -21,3 +21,4 @@ pmr2/pmrimport/interfaces.py
 pmr2/pmrimport/traverse.py
 pmr2/pmrimport/tests/__init__.py
 pmr2/pmrimport/tests/test_root.py
+pmr2/pmrimport/tests/test_traverse.py

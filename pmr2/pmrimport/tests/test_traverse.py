@@ -53,6 +53,9 @@ class TestTraverser(TestCase):
 
     def setUp(self):
         def traverse(self, request, name):
+            if hasattr(self, '_raise'):
+                # it's either AttributeError or KeyError
+                raise self._raise
             raise AttributeError
 
         PMR1Traverser.o_defaultTraverse = PMR1Traverser.defaultTraverse
@@ -79,6 +82,9 @@ class TestTraverser(TestCase):
     def testPMR1Traverser_001_badlink(self):
         request = TestRequest(TraversalRequestNameStack=[])
         traverser = PMR1Traverser(mock_context, request)
+        self.assertRaises(HTTPNotFound,
+            traverser.publishTraverse, request, 'model_2000')
+        traverser._raise = KeyError
         self.assertRaises(HTTPNotFound,
             traverser.publishTraverse, request, 'model_2000')
 

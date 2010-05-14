@@ -23,7 +23,7 @@ class PMR1Traverser(DefaultPublishTraverse):
     def publishTraverse(self, request, name):
         try:
             return self.defaultTraverse(request, name)
-        except AttributeError:
+        except (AttributeError, KeyError):
             pass
 
         settings = zope.component.queryUtility(IPMR2GlobalSettings)
