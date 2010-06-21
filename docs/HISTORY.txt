@@ -1,8 +1,9 @@
 Changelog
 =========
 
-0.0 - Unreleased
-----------------
+0.3 - Released (2010-06-21)
+---------------------------
 
-* Initial release
+* Removed all migration related code from PMR1 to PMR2.
+* Only feature remaining now is the redirection of legacy PMR1 links.
 
