@@ -48,7 +48,7 @@ class PMR1MigratedView(layout.FormWrapper):
         )
         if exposure:
             # join
-            target = '%s/%s.cellml' % (
+            target = '%s/%s.cellml/view' % (
                 exposure[0].getURL(), self.migration_info[0])
             # would be nice if we can set an informative status message
             # about redirection due to migration of PMR1 to PMR2.
