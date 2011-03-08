@@ -4,7 +4,7 @@ from zope.publisher.interfaces import IRequest
 from ZPublisher.BaseRequest import DefaultPublishTraverse
 from paste.httpexceptions import HTTPNotFound
 
-from pmr2.app.interfaces import IPMR2GlobalSettings
+from pmr2.app.settings.interfaces import IPMR2GlobalSettings
 from pmr2.pmrimport.interfaces import IPMR1
 
 

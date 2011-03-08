@@ -7,7 +7,7 @@ from zope.interface.verify import verifyClass
 from zope.publisher.interfaces import IPublishTraverse
 from paste.httpexceptions import HTTPNotFound, HTTPFound
 
-from pmr2.app.interfaces import *
+from pmr2.app.settings.interfaces import IPMR2GlobalSettings
 from pmr2.app.tests.base import TestRequest
 
 import pmr2.pmrimport
