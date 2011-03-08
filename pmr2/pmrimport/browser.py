@@ -12,7 +12,7 @@ from Products.CMFCore.utils import getToolByName
 from pmr2.app.interfaces import *
 from pmr2.app.content import *
 from pmr2.app.browser import widget
-from pmr2.app.browser import exposure
+from pmr2.app.exposure import browser as exposure
 
 from interfaces import IPMRImportMap
 from content import PMRImportMap
