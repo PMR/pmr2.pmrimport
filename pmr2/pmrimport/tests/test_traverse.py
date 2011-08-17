@@ -8,7 +8,7 @@ from zope.publisher.interfaces import IPublishTraverse
 from paste.httpexceptions import HTTPNotFound, HTTPFound
 
 from pmr2.app.settings.interfaces import IPMR2GlobalSettings
-from pmr2.app.tests.base import TestRequest
+from pmr2.testing.base import TestRequest
 
 import pmr2.pmrimport
 from pmr2.pmrimport.traverse import PMR1Traverser
