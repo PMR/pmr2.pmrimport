@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.5 - Released (2010-10-05)
+---------------------------
+
+* Cleaned up some rendering issues because of excessive dependencies.
+
 0.4 - Released (2010-04-08)
 ---------------------------
 
