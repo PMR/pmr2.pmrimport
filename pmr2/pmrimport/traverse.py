@@ -40,15 +40,33 @@ class PMR1Traverser(DefaultPublishTraverse):
         trail = request['TraversalRequestNameStack']
         request['TraversalRequestNameStack'] = []
 
-        # have to compute value of workspace from requested id as it is
-        # not saved.
-        workspace = name[:name.find('_version')]
+        # have to compute values related to the workspace from the 
+        # requested id as it was just different (and not stored).
+        workspace_id = name[:name.find('_version')]
+
+        workspace_pfrags = (
+            self.context.getPhysicalPath() + 
+            (workspace_root,) +
+            (workspace_id,)
+        )
+
+        # the new full workspace path is expected in the new catalog
+        # search that will be done by the view
+        workspace = '/'.join(workspace_pfrags)
+
         rev = info[1]
         name = name
+
         workspace_uri = '/'.join([
             self.context.absolute_url(), 
             workspace_root,
-            workspace,
+            workspace_id,
+        ])
+
+        workspace_rev_uri = '/'.join([
+            self.context.absolute_url(), 
+            workspace_root,
+            workspace_id,
             '@@%s',
             rev,
         ])
@@ -57,16 +75,15 @@ class PMR1Traverser(DefaultPublishTraverse):
             # we redirect to the original CellML file that should now
             # be in a workspace.
             fn = info[0] + '.cellml'
-            uri = '/'.join((workspace_uri, fn,)) % 'rawfile'
+            uri = '/'.join((workspace_rev_uri, fn,)) % 'rawfile'
             return request.response.redirect(uri)
 
         view = zope.component.getMultiAdapter((self.context, request), 
                                               name='pmr1')
-        # acquire the view and let it handle the rest.
-        view = view.__of__(self.context)
         view.workspace = workspace
         view.model_name = name
         view.commit_id = rev
         view.migration_info = info
-        view.workspace_uri = workspace_uri % 'file'
+        view.workspace_uri = workspace_uri
+        view.workspace_rev_uri = workspace_rev_uri % 'file'
         return view

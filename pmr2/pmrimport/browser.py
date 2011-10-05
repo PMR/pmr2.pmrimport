@@ -5,8 +5,9 @@ import zope.component
 import z3c.form.field
 import z3c.form.form
 
-from plone.z3cform import layout
+from zope.publisher.browser import BrowserPage
 from zope.app.pagetemplate.viewpagetemplatefile import ViewPageTemplateFile
+
 from Products.CMFCore.utils import getToolByName
 
 from pmr2.app.interfaces import *
@@ -18,16 +19,19 @@ from interfaces import IPMRImportMap
 from content import PMRImportMap
 
 
-class PMR1MigratedView(layout.FormWrapper):
+class PMR1MigratedView(BrowserPage):
     """
     A view with information about the PMR1 to PMR2 migration.
     """
 
-    form_instance = ViewPageTemplateFile('migrated.pt')
+    template = ViewPageTemplateFile('migrated.pt')
+
+    # these are set by the traverser that's part of this module.
     workspace = None
     model_name = None
     commit_id = None
     workspace_uri = None
+    workspace_rev_uri = None
 
     def __call__(self):
 
@@ -62,7 +66,4 @@ class PMR1MigratedView(layout.FormWrapper):
             )
         # no border in this case.
         self.request['disable_border'] = True
-        return super(PMR1MigratedView, self).__call__()
-
-    def label(self):
-        return u'PMR2 Migration Notice'
+        return self.template()

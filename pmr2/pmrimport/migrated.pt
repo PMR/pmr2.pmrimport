@@ -1,34 +1,70 @@
-<p>
-  This model, <span tal:replace="view/model_name"/>, was present in the
-  PMR1 version of the CellML Model Repository.  If you are interested
-  in the raw model files as they were for this version, you may find 
-  them at <a href="" tal:attributes="href view/workspace_uri">this 
-  revision of its workspace</a>.
-</p>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      lang="en"
+      i18n:domain="pmr2.pmrimport"
+      metal:use-macro="context/main_template/macros/master" >
+  <body>
 
-<tal:if tal:condition="view/related_exposures">
-<p>
-  However, if you are interested in its associated presentational page 
-  (now called Exposure) as it appeared in PMR1, this version of the
-  model did not have its pages regenerated during the migration as it
-  was not the latest version.  Below are page(s) that are generated for
-  later version(s) of this model.
-</p>
+    <metal:fill fill-slot="main">
+      <h1 class="documentFirstHeading">PMR2 Migration Notice</h1>
 
-<ul>
-  <li tal:repeat="i view/related_exposures">
-    <a tal:attributes="href i/getURL"
-       tal:content="i/Title"></a>
-  </li>
-</ul>
-</tal:if>
+      <p>
+        This requested model, <span tal:replace="view/model_name"/>, is
+        no longer available at this location as PMR2 has replaced the
+        decommissioned software, PMR, on 2009-06-22.
+      </p>
 
+      <p>
+        If you are interested in the original, unprocessed model file
+        as it resided in PMR, it can be found with its supporting 
+        documentation and image(s) at <a href="" 
+        tal:attributes="href view/workspace_rev_uri;">this revision</a>
+        of its <a href="" tal:attributes="href view/workspace_uri;"
+        >PMR2 workspace</a>.  PMR2 Workspaces are the storage components
+        for models and their associated data in this repository 
+        software.
+      </p>
 
-<tal:if tal:condition="not:view/related_exposures">
-<p>
-  However, if you are interested in its associated presentational page 
-  (now called Exposure) as it appeared in PMR1, this model did not have
-  its presentational pages regenerated for any of its versions or it is
-  temporarily not found.  Please check back later.
-</p>
-</tal:if>
+      <tal:if tal:condition="view/related_exposures">
+      <p>
+        If you are interested in the presentational pages that are 
+        similar to the ones found the previous repository, the following
+        is a list of pages that are derived from later revision(s) of 
+        this <a href="" tal:attributes="href view/workspace_uri;"
+        >model's workspace</a>.  
+      </p>
+
+      <ul>
+        <li tal:repeat="i view/related_exposures">
+          <a tal:attributes="href i/getURL"
+             tal:content="i/Title"></a>
+        </li>
+      </ul>
+
+      <p>
+        As the requested model revision was not the latest available as
+        of 2009-06-22, the presentational pages were not regenerated
+        when this model was migrated into PMR2.  Also, please be advised
+        that these pages may appear differently as compared to their
+        original appearance in the previous software, as continuous
+        improvements to the presentational modules in PMR2 may result in
+        more data being extracted and presented than in the previous
+        software.  
+      </p>
+      </tal:if>
+
+      <tal:if tal:condition="not:view/related_exposures">
+      <p>
+        If you are interested in the presentational pages that are 
+        similar to the ones found the previous repository, this model
+        did not have its presentational pages regenerated or they are 
+        temporarily not found.  Please check back later or visit the 
+        <a href="" tal:attributes="href view/workspace_uri;
+        ">model's workspace</a> for more information.
+      </p>
+      </tal:if>
+
+    </metal:fill>
+
+  </body>
+</html>

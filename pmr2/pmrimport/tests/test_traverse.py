@@ -20,6 +20,9 @@ class MockContext(Implicit):
     def absolute_url(self):
         return 'http://nohost/plone'
 
+    def getPhysicalPath(self):
+        return ('', 'plone')
+
 mock_context = MockContext()
 
 class MockSettings(object):
@@ -112,10 +115,12 @@ class TestTraverser(TestCase):
         traverser = PMR1Traverser(mock_context, request)
         result = traverser.publishTraverse(request, 'model_2000_version01')
         self.failUnless(isinstance(result, PMR1MigratedView))
-        self.assertEqual(result.workspace, 'model_2000')
+        self.assertEqual(result.workspace, '/plone/workspace/model_2000')
         self.assertEqual(result.model_name, 'model_2000_version01')
         self.assertEqual(result.commit_id, '12345')
         self.assertEqual(result.workspace_uri,
+            'http://nohost/plone/workspace/model_2000')
+        self.assertEqual(result.workspace_rev_uri,
             'http://nohost/plone/workspace/model_2000/@@file/12345')
 
 def test_suite():
