@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: pmr2.pmrimport
-Version: 0.0dev
+Version: 0.5
 Summary: PMR data import module for PMR2
 Home-page: UNKNOWN
 Author: Tommy Yu
@@ -13,6 +13,11 @@ Description: Introduction
         
         Changelog
         =========
+        
+        0.5 - Released (2010-10-05)
+        ---------------------------
+        
+        * Cleaned up some rendering issues because of excessive dependencies.
         
         0.4 - Released (2010-04-08)
         ---------------------------
