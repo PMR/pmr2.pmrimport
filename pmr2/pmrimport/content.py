@@ -5,8 +5,6 @@ from zope.annotation import factory
 from zope.annotation.interfaces import IAttributeAnnotatable
 from persistent import Persistent
 
-from pmr2.app.content.interfaces import IPMR2
-
 from interfaces import IPMRImportMap
 
 

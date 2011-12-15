@@ -11,7 +11,6 @@ from zope.app.pagetemplate.viewpagetemplatefile import ViewPageTemplateFile
 from Products.CMFCore.utils import getToolByName
 
 from pmr2.app.interfaces import *
-from pmr2.app.content import *
 from pmr2.app.browser import widget
 from pmr2.app.exposure import browser as exposure
 
