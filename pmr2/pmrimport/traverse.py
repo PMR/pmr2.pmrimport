@@ -1,8 +1,6 @@
-from paste.httpexceptions import HTTPNotFound, HTTPFound
 import zope.component
-from zope.publisher.interfaces import IRequest
+from zope.publisher.interfaces import IRequest, NotFound
 from ZPublisher.BaseRequest import DefaultPublishTraverse
-from paste.httpexceptions import HTTPNotFound
 
 from pmr2.app.settings.interfaces import IPMR2GlobalSettings
 from pmr2.pmrimport.interfaces import IPMR1
@@ -30,10 +28,10 @@ class PMR1Traverser(DefaultPublishTraverse):
         map = zope.component.queryAdapter(self.context, name='PMRImportMap')
         if not settings:
             # we could assume the workspace_root is 'workspace', but...
-            raise HTTPNotFound(name)
+            raise NotFound(self.context, name)
 
         if not map or name not in map.pmrimport_map:
-            raise HTTPNotFound(name)
+            raise NotFound(self.context, name)
 
         workspace_root = settings.default_workspace_subpath
         info = map.pmrimport_map[name]
