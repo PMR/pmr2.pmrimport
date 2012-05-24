@@ -4,8 +4,7 @@ import zope.interface
 import zope.component
 import zope.interface
 from zope.interface.verify import verifyClass
-from zope.publisher.interfaces import IPublishTraverse
-from paste.httpexceptions import HTTPNotFound, HTTPFound
+from zope.publisher.interfaces import IPublishTraverse, NotFound
 
 from pmr2.app.settings.interfaces import IPMR2GlobalSettings
 from pmr2.testing.base import TestRequest
@@ -85,10 +84,10 @@ class TestTraverser(TestCase):
     def testPMR1Traverser_001_badlink(self):
         request = TestRequest(TraversalRequestNameStack=[])
         traverser = PMR1Traverser(mock_context, request)
-        self.assertRaises(HTTPNotFound,
+        self.assertRaises(NotFound,
             traverser.publishTraverse, request, 'model_2000')
         traverser._raise = KeyError
-        self.assertRaises(HTTPNotFound,
+        self.assertRaises(NotFound,
             traverser.publishTraverse, request, 'model_2000')
 
     def testPMR1Traverser_002_pmr_model(self):
