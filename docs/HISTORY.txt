@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.7 - Released (2012-09-03)
+---------------------------
+
+* Make use of zope.publisher exception instead of repoze.
+
 0.6 - Released (2012-02-10)
 ---------------------------
 
