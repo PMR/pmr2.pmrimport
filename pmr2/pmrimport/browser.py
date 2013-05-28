@@ -6,7 +6,7 @@ import z3c.form.field
 import z3c.form.form
 
 from zope.publisher.browser import BrowserPage
-from zope.app.pagetemplate.viewpagetemplatefile import ViewPageTemplateFile
+from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 
 from Products.CMFCore.utils import getToolByName
 
